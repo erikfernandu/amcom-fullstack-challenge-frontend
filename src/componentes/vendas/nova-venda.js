@@ -1,16 +1,21 @@
 // NovaVenda.js
 
 import React, { useState, useEffect } from 'react';
-import './css/vendas.css'; // Importe o arquivo de estilos
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import './css/vendas.css';
 
 const NovaVenda = () => {
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [produtoSelecionado, setProdutoSelecionado] = useState(null);
+  const [produtosAdicionados, setProdutosAdicionados] = useState([]);
+  const [quantidadeAtual, setQuantidadeAtual] = useState(0);
   const [vendedores, setVendedores] = useState([]);
   const [vendedorSelecionado, setVendedorSelecionado] = useState('');
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
 
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -21,6 +26,40 @@ const NovaVenda = () => {
     const minutes = String(now.getMinutes()).padStart(2, '0');
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  const handleResultClick = async (result) => {
+    try {
+      setProdutoSelecionado(result);
+
+      setSearchTerm(result.descricao || '');
+
+      setSearchResults([]);
+
+    } catch (error) {
+      console.error('Erro ao obter detalhes do produto:', error);
+    }
+  };
+
+  const handleAdicionarProduto = () => {
+    if (produtoSelecionado && quantidadeAtual > 0) {
+      setProdutosAdicionados([...produtosAdicionados,
+        {
+          produto: produtoSelecionado,
+          quantidade: quantidadeAtual,
+        },
+      ]);
+      setProdutoSelecionado(null);
+      setQuantidadeAtual(0);
+      setSearchTerm('');
+      setSearchResults([]);
+    }
+  };
+
+  const handleExcluirProduto = (index) => {
+    const novosProdutos = [...produtosAdicionados];
+    novosProdutos.splice(index, 1);
+    setProdutosAdicionados(novosProdutos);
   };
 
   useEffect(() => {
@@ -41,6 +80,11 @@ const NovaVenda = () => {
     }
   }, [searchTerm]);
 
+  const handleVendedoresChange = (event) => {
+    const selectedValue = event.target.value;
+    setVendedorSelecionado(selectedValue);
+  };
+
   useEffect(() => {
     const apiUrl = 'http://127.0.0.1:8000/api/vendedores/';
     fetch(apiUrl)
@@ -49,6 +93,11 @@ const NovaVenda = () => {
       .catch(error => console.error('Erro ao obter vendedores:', error));
   }, []);
 
+  const handleClientesChange = (event) => {
+    const selectedValue = event.target.value;
+    setClienteSelecionado(selectedValue);
+  };
+
   useEffect(() => {
     const apiUrl = 'http://127.0.0.1:8000/api/clientes/';
     fetch(apiUrl)
@@ -56,21 +105,6 @@ const NovaVenda = () => {
       .then(data => setClientes(data))
       .catch(error => console.error('Erro ao obter clientes:', error));
   }, []);
-
-  const handleResultClick = (result) => {
-    setSearchTerm(result.descricao || '');
-    setSearchResults([]);
-  };
-
-  const handleVendedoresChange = (event) => {
-    const selectedValue = event.target.value;
-    setVendedorSelecionado(selectedValue);
-  };
-
-  const handleClientesChange = (event) => {
-    const selectedValue = event.target.value;
-    setClienteSelecionado(selectedValue);
-  };
 
   return (
     <div className="nova-venda-container">
@@ -82,7 +116,7 @@ const NovaVenda = () => {
             <input id='buscar' type="text" placeholder="Digite aqui" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
             <ul>
             {searchResults.map((result) => (
-              <li key={result.id} onClick={() => handleResultClick(result)}>
+              <li key={result.id} onMouseDown={() => handleResultClick(result)}>
                 {result.descricao}
               </li>
             ))}
@@ -90,15 +124,37 @@ const NovaVenda = () => {
           </div>
           <div className="quantidade">
             <label htmlFor='quantidade'>Quantidade de itens:</label>
-            <input id='quantidade' type="number" min="0" />
-            <button className='adicionar-btn'>Adicionar</button>
+            <input id='quantidade' type="number" min="0" value={quantidadeAtual} onChange={(e) => setQuantidadeAtual(parseInt(e.target.value, 10) || 0)}/>
+            <button className='adicionar-btn' onClick={handleAdicionarProduto}>Adicionar</button>
           </div>
         </div>
         <div className="produtos-labels">
-          <strong>Produtos/Serviços</strong>
-          <strong>Quantidade</strong>
-          <strong>Preço unitário</strong>
-          <strong>Total</strong>
+          <div className="produto-label">
+            <strong>Produtos/Serviços</strong>
+          </div>
+          <div className="produto-label">
+            <strong>Quantidade</strong>
+          </div>
+          <div className="produto-label">
+            <strong>Preço unitário</strong>
+          </div>
+          <div className="produto-label">
+            <strong>Total</strong>
+          </div>
+          <div className="produto-label">
+            <strong>delete</strong>
+          </div>
+        </div>
+        <div className="produtos-adicionados">
+          {produtosAdicionados.map((item, index) => (
+            <div key={index} className="produto-adicionado">
+              <span>{item.produto.descricao}</span>
+              <span>{item.quantidade}</span>
+              <span>R$ {item.produto.valor}</span>
+              <span>R$ {item.quantidade * item.produto.valor}</span>
+              <a className="excluirBtn" onClick={() => handleExcluirProduto(index)}><FontAwesomeIcon icon={faTrash}/></a>
+            </div>
+          ))}
         </div>
       </div>
 

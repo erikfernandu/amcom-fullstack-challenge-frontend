@@ -56,7 +56,7 @@ const ListaVendas = () => {
     <div>
       <div className="container-header">
         <h2 className="header-subtitle">Vendas Realizadas</h2>
-        <button className="inserir-btn"><Link to="/novavenda">Inserir nova Venda</Link></button>
+        <Link to="/novavenda"><button className="inserir-btn">Inserir nova Venda</button></Link>
       </div>
       <div className="tabela-container-flex">
           <div className="tabela-row">
@@ -104,13 +104,13 @@ const ListaVendas = () => {
                   {showItens[venda.id] ? 'Fechar' : 'Ver Itens'}
                   </button>
                   <Link to={`/detalhes/${venda.id}`}>
-                    <button className="editarBtn">
+                    <a className="editarBtn">
                         <FontAwesomeIcon icon={faEdit}/>
-                      </button>
+                      </a>
                   </Link>                  
-                  <button className="excluirBtn" onClick={() => handle_delete(venda.id)}>
+                  <a className="excluirBtn" onClick={() => handle_delete(venda.id)}>
                     <FontAwesomeIcon icon={faTrash}/>
-                  </button>
+                  </a>
                 </div>
               </div>
             {showItens[venda.id] && (

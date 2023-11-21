@@ -102,12 +102,35 @@ input, select{
 }
 
 .produtos-labels {
+  display: grid;
+  grid-template-columns: auto auto auto auto; /* Distribui as colunas igualmente */
+  gap: 8px; /* Espaçamento entre as colunas */
+  align-items: center; /* Alinha itens verticalmente ao centro */
   margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
+  padding: 10px;
+  border: none;
+  width: 100%;
 }
 
-/* Estilos para a caixa de pesquisa */
+.produto-label {
+  font-weight: bold;
+}
+
+.produtos-adicionados {
+  margin-top: 20px;
+}
+
+.produto-adicionado {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  gap: 8px;
+  align-items: left;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: none;
+  width: 100%;
+}
+
 .buscar {
   position: relative;
 }
