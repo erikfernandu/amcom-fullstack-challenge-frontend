@@ -7,10 +7,6 @@
   margin-bottom: 20px;
 }
 
-.header-subtitle {
-  margin: 0;
-}
-
 .tabela-container-flex {
   display: flex;
   flex-direction: column;

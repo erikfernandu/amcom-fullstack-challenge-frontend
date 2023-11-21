@@ -1,61 +1,65 @@
 import React, { useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import './css/comissoes.css';
 
 const ListaComissoes = () => {
+  const [isSearching, setIsSearching] = useState(false);
 
-  const [setDados] = useState([]);
+  const handleSearch = () => {
+    // Implementar lógica de pesquisa aqui
+    setIsSearching(true);
+  };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/api/comissoes/');
-        const data = await response.json();
-        setDados(data);
-      } catch (error) {
-        console.error('Erro ao buscar comissoes:', error);
-      }
-    };
-    fetchData();
-  }, [setDados]);
+  const exemploRegistro = {
+    codigo: 1,
+    vendedor: 'Nome do Vendedor',
+    totalVendas: 1000,
+    totalComissoes: 100,
+    valorTotal: 900,
+  };
 
   return (
     <div>
       <div className="container-header">
         <h2 className="header-subtitle">Relatório de Comissões</h2>
-        <input type="date" defaultValue='' />
-        <input type="date" defaultValue='' />
+        <div className="input-container">
+            <input type="date" />
+            <input type="date" />
+          <button className="searchBtn" onClick={handleSearch}>
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
+        </div>
       </div>
       <div className="tabela-container">
-        <table className="tabela">
-          <thead>
-            <tr>
-              <th>Cód</th>
-              <th>Vendedor</th>
-              <th>Total de Vendas</th>
-              <th>Total de Comissões</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* {comissoes.map((comissao) => (
-              <tr key={comissao.id}>
-                <td>{comissao.codigo}</td>
-                <td>{venda.vendedor}</td>
-                <td>{venda.total_vendas}</td>
-                <td>{venda.total_comissoes}</td>
-                <td>R$ {venda.valor_total}</td>
-                <td>
-                  <button className='verBtn'>Ver itens</button>
-                  <button className="editarBtn">
-                    <FontAwesomeIcon icon={faEdit} />
-                  </button>
-                  <button className="excluirBtn" onClick={() => handle_delete(venda.id)}>
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
-                </td>
-              </tr>
-            ))} */}
-          </tbody>
-        </table>
+        {isSearching ? (
+          <div className="grid-container">
+            <div className="grid-header">
+              <div>Cód</div>
+              <div>Vendedor</div>
+              <div>Total de Vendas</div>
+              <div>Total de Comissões</div>
+            </div>
+            <div className="grid-item">
+              <div>{exemploRegistro.codigo}</div>
+              <div>{exemploRegistro.vendedor}</div>
+              <div>{exemploRegistro.totalVendas}</div>
+              <div>{exemploRegistro.totalComissoes}</div>
+            </div>
+            <div className="grid-item">
+              <div>{exemploRegistro.codigo}</div>
+              <div>{exemploRegistro.vendedor}</div>
+              <div>{exemploRegistro.totalVendas}</div>
+              <div>{exemploRegistro.totalComissoes}</div>
+            </div>
+            <div className="grid-footer">
+              <div>Total de comissões do período</div>
+              <div>R$ 1000,00</div>
+            </div>
+          </div>
+          ) : (
+            <p className="mensagem">Para visualizar o relatório, selecione um período nos campos acima.</p>
+        )}
       </div>
     </div>
   );

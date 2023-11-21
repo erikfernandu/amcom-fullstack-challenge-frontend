@@ -43,6 +43,24 @@ const NovaVenda = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchApiData = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/produtos/?search=${searchTerm}`);
+        const data = await response.json();
+        setSearchResults(data);
+      } catch (error) {
+        console.error('Erro ao buscar dados da API:', error);
+      }
+    };
+  
+    if (searchTerm.trim() !== '') {
+      fetchApiData();
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchTerm]);
+
   const handleAdicionarProduto = () => {
     if (produtoSelecionado && quantidadeAtual > 0) {
       const valorProduto = produtoSelecionado.valor || 0;
@@ -76,24 +94,6 @@ const NovaVenda = () => {
       setProdutosAdicionados(novosProdutos);
     }
   };
-
-  useEffect(() => {
-    const fetchApiData = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:8000/api/produtos/?search=${searchTerm}`);
-        const data = await response.json();
-        setSearchResults(data);
-      } catch (error) {
-        console.error('Erro ao buscar dados da API:', error);
-      }
-    };
-  
-    if (searchTerm.trim() !== '') {
-      fetchApiData();
-    } else {
-      setSearchResults([]);
-    }
-  }, [searchTerm]);
 
   const handleVendedoresChange = (event) => {
     const selectedValue = event.target.value;

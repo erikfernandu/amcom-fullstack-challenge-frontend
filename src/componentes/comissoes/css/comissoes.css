@@ -1,0 +1,59 @@
+/* Adicione isso ao seu arquivo de estilo (comissoes.css) ou crie um se necessário */
+
+.input-container {
+    display: flex;
+    gap: 10px; /* Ajuste conforme necessário */
+    align-items: center;
+  }
+  
+  .input-container input {
+    height: 28px; /* Ajuste a altura conforme necessário */
+  }
+
+  .searchBtn {
+    background-color: #317776;; /* Cor de fundo do botão de pesquisa */
+    color: #e2e2e2; /* Cor do ícone do botão de pesquisa */
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .mensagem {
+    text-align: center;
+    margin-top: 140px; /* Ajuste conforme necessário */
+    font-style: italic;
+  }
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: auto;
+    border-bottom: 1px solid #767676;
+    margin-top: 5%; /* Ajuste conforme necessário */
+  }
+  
+  .grid-header {
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    border-bottom: 1px solid #767676;
+  }
+  
+  .grid-item {
+    border-bottom: 1px solid #767676; /* Adiciona uma borda inferior para cada item na tabela */
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  /* Estilo para a última borda inferior da tabela */
+  .grid-item:last-child {
+    border-bottom: none;
+  }
+  .grid-footer {
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+  }
