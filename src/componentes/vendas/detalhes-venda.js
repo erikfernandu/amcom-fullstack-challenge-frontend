@@ -1,21 +1,66 @@
-// detalhes-venda.js
+// NovaVenda.js
+
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 import './css/vendas.css';
 
 const NovaVenda = () => {
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [produtoSelecionado, setProdutoSelecionado] = useState(null);
+  const [produtosAdicionados, setProdutosAdicionados] = useState([]);
+  const [quantidadeAtual, setQuantidadeAtual] = useState(0);
   const [vendedores, setVendedores] = useState([]);
   const [vendedorSelecionado, setVendedorSelecionado] = useState('');
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const { venda } = useParams();
-  
-  const handleResultClick = (result) => {
-    setSearchTerm(result.descricao || '');
-    setSearchResults([]);
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  const handleResultClick = async (result) => {
+    try {
+      setProdutoSelecionado(result);
+
+      setSearchTerm(result.descricao || '');
+
+      setSearchResults([]);
+
+    } catch (error) {
+      console.error('Erro ao obter detalhes do produto:', error);
+    }
+  };
+
+  const handleAdicionarProduto = () => {
+    if (produtoSelecionado && quantidadeAtual > 0) {
+      setProdutosAdicionados([...produtosAdicionados,
+        {
+          produto: produtoSelecionado,
+          quantidade: quantidadeAtual,
+        },
+      ]);
+      setProdutoSelecionado(null);
+      setQuantidadeAtual(0);
+      setSearchTerm('');
+      setSearchResults([]);
+    }
+  };
+
+  const handleExcluirProduto = (index) => {
+    const novosProdutos = [...produtosAdicionados];
+    novosProdutos.splice(index, 1);
+    setProdutosAdicionados(novosProdutos);
   };
 
   useEffect(() => {
@@ -72,7 +117,7 @@ const NovaVenda = () => {
             <input id='buscar' type="text" placeholder="Digite aqui" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
             <ul>
             {searchResults.map((result) => (
-              <li key={result.id} onClick={() => handleResultClick(result)}>
+              <li key={result.id} onMouseDown={() => handleResultClick(result)}>
                 {result.descricao}
               </li>
             ))}
@@ -80,15 +125,34 @@ const NovaVenda = () => {
           </div>
           <div className="quantidade">
             <label htmlFor='quantidade'>Quantidade de itens:</label>
-            <input id='quantidade' type="number" min="0" />
-            <button className='adicionar-btn'>Adicionar</button>
+            <input id='quantidade' type="number" min="0" value={quantidadeAtual} onChange={(e) => setQuantidadeAtual(parseInt(e.target.value, 10) || 0)}/>
+            <button className='adicionar-btn' onClick={handleAdicionarProduto}>Adicionar</button>
           </div>
         </div>
         <div className="produtos-labels">
-          <strong>Produtos/Serviços</strong>
-          <strong>Quantidade</strong>
-          <strong>Preço unitário</strong>
-          <strong>Total</strong>
+          <div className="produto-label">
+            <strong>Produtos/Serviços</strong>
+          </div>
+          <div className="produto-label">
+            <strong>Quantidade</strong>
+          </div>
+          <div className="produto-label">
+            <strong>Preço unitário</strong>
+          </div>
+          <div className="produto-label">
+            <strong>Total</strong>
+          </div>
+          <div>
+          </div>
+          {produtosAdicionados.map((item, index) => (
+            <div key={index} className="produto-adicionado">
+              <span>{item.produto.descricao}</span>
+              <span>{item.quantidade}</span>
+              <span>R$ {item.produto.valor}</span>
+              <span>R$ {item.quantidade * item.produto.valor}</span>
+              <a href="#" className="excluirBtn" onClick={() => handleExcluirProduto(index)}><FontAwesomeIcon icon={faTrash}/></a>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -100,7 +164,7 @@ const NovaVenda = () => {
           {/* Conteúdo da seção de Dados da Venda */}
           <div className="data-hora">
             <label htmlFor='data'>Data e hora da venda:</label>
-            <input id='data' type="datetime-local" />
+            <input id='data' type="datetime-local" defaultValue={getCurrentDateTime()} />
           </div>
           <div className="vendedor">
             <label htmlFor='vendedoresSelect'>Escolha um vendedor:</label>
@@ -129,8 +193,11 @@ const NovaVenda = () => {
             <span>R$ 0,00</span>
           </div>
           <div className="botoes">
-            <button>Cancelar</button>
-            <button>Salvar</button>
+          <Link to="/vendas" className="botao-link">
+            Cancelar
+          </Link>
+            
+            <button>Finalizar</button>
           </div>
         </div>
       </div>

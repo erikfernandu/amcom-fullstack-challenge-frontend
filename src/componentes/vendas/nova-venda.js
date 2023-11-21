@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 import './css/vendas.css';
 
 const NovaVenda = () => {
@@ -12,6 +13,7 @@ const NovaVenda = () => {
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [produtosAdicionados, setProdutosAdicionados] = useState([]);
   const [quantidadeAtual, setQuantidadeAtual] = useState(0);
+  const [valorTotal, setValorTotal] = useState(0);
   const [vendedores, setVendedores] = useState([]);
   const [vendedorSelecionado, setVendedorSelecionado] = useState('');
   const [clientes, setClientes] = useState([]);
@@ -43,6 +45,10 @@ const NovaVenda = () => {
 
   const handleAdicionarProduto = () => {
     if (produtoSelecionado && quantidadeAtual > 0) {
+      const valorProduto = produtoSelecionado.valor || 0;
+      const totalAtualizado = valorTotal + valorProduto * quantidadeAtual;
+      setValorTotal(totalAtualizado);
+
       setProdutosAdicionados([...produtosAdicionados,
         {
           produto: produtoSelecionado,
@@ -57,9 +63,18 @@ const NovaVenda = () => {
   };
 
   const handleExcluirProduto = (index) => {
-    const novosProdutos = [...produtosAdicionados];
-    novosProdutos.splice(index, 1);
-    setProdutosAdicionados(novosProdutos);
+    if (index >= 0 && index < produtosAdicionados.length) {
+      const produtoRemovido = produtosAdicionados[index];
+      const valorProdutoRemovido = produtoRemovido.produto.valor || 0;
+      const quantidadeRemovida = produtoRemovido.quantidade;
+
+      const totalAtualizado = valorTotal - valorProdutoRemovido * quantidadeRemovida;
+      setValorTotal(totalAtualizado);
+
+      const novosProdutos = [...produtosAdicionados];
+      novosProdutos.splice(index, 1);
+      setProdutosAdicionados(novosProdutos);
+    }
   };
 
   useEffect(() => {
@@ -141,18 +156,15 @@ const NovaVenda = () => {
           <div className="produto-label">
             <strong>Total</strong>
           </div>
-          <div className="produto-label">
-            <strong>delete</strong>
+          <div>
           </div>
-        </div>
-        <div className="produtos-adicionados">
           {produtosAdicionados.map((item, index) => (
             <div key={index} className="produto-adicionado">
               <span>{item.produto.descricao}</span>
               <span>{item.quantidade}</span>
               <span>R$ {item.produto.valor}</span>
               <span>R$ {item.quantidade * item.produto.valor}</span>
-              <a className="excluirBtn" onClick={() => handleExcluirProduto(index)}><FontAwesomeIcon icon={faTrash}/></a>
+              <a href="#" className="excluirBtn" onClick={() => handleExcluirProduto(index)}><FontAwesomeIcon icon={faTrash}/></a>
             </div>
           ))}
         </div>
@@ -190,12 +202,15 @@ const NovaVenda = () => {
               ))}
             </select>
           </div>
-          <div className="total-compra">
-            <p>Total da compra:</p>
-            <span>R$ 0,00</span>
+          <div className="total-venda">
+            <h3>Valor total da venda</h3>
+            <h2>R$ {valorTotal.toFixed(2)}</h2>
           </div>
           <div className="botoes">
-            <button>Cancelar</button>
+          <Link to="/vendas" className="botao-link">
+            Cancelar
+          </Link>
+            
             <button>Finalizar</button>
           </div>
         </div>
