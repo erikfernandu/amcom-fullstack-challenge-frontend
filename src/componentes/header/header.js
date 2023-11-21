@@ -1,6 +1,6 @@
 // Header.js
 import React from 'react';
-import './header.css';
+import './css/header.css';
 import logo from '../../img/logo.png'
 
 const Header = ({ onToggleCollapse }) => {

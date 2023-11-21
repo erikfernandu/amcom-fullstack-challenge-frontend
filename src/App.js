@@ -4,9 +4,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // Componentes
 import Header from './componentes/header/header.js';
 import Sidebar from './componentes/sidebar/sidebar.js';
-import Vendas from './componentes/vendas/listavendas.js'
+import Vendas from './componentes/vendas/lista-vendas.js'
 // import DetalhesVenda from './componentes/vendas/detalhesvenda.js';
-import NovaVenda from './componentes/vendas/novavenda.js';
+import NovaVenda from './componentes/vendas/nova-venda.js';
 import Comissoes from './componentes/comissoes/lista-comissoes.js'
 // Estilo
 import './App.css';

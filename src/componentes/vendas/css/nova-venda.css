@@ -106,3 +106,51 @@ input, select{
   display: flex;
   justify-content: space-between;
 }
+
+/* Estilos para a caixa de pesquisa */
+.buscar {
+  position: relative;
+}
+
+.buscar label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.buscar input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+/* Estilos para a lista de resultados */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-height: 150px;
+  overflow-y: auto;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+  background-color: #fff;
+  display: none; /* Ocultar por padrão */
+}
+
+.buscar input:focus + ul {
+  display: block; /* Exibir quando a caixa de pesquisa estiver em foco */
+}
+
+li {
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+li:hover {
+  background-color: #f0f0f0;
+}
