@@ -103,9 +103,11 @@ const ListaVendas = () => {
                   <button className="verBtn" onClick={() => handleVerItens(venda.id)}>
                   {showItens[venda.id] ? 'Fechar' : 'Ver Itens'}
                   </button>
-                  <button className="editarBtn">
-                    <FontAwesomeIcon icon={faEdit}/>
-                  </button>
+                  <Link to={`/detalhes/${venda.id}`}>
+                    <button className="editarBtn">
+                        <FontAwesomeIcon icon={faEdit}/>
+                      </button>
+                  </Link>                  
                   <button className="excluirBtn" onClick={() => handle_delete(venda.id)}>
                     <FontAwesomeIcon icon={faTrash}/>
                   </button>

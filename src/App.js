@@ -5,8 +5,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './componentes/header/header.js';
 import Sidebar from './componentes/sidebar/sidebar.js';
 import Vendas from './componentes/vendas/lista-vendas.js'
-// import DetalhesVenda from './componentes/vendas/detalhesvenda.js';
 import NovaVenda from './componentes/vendas/nova-venda.js';
+import DetalhesVenda from './componentes/vendas/detalhes-venda.js';
 import Comissoes from './componentes/comissoes/lista-comissoes.js'
 // Estilo
 import './App.css';
@@ -29,7 +29,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Vendas/>} />
               <Route path="/vendas" element={<Vendas/>} />
-              {/* <Route path="/detalhes/:id" element={<DetalhesVenda/>} /> */}
+              <Route path="/detalhes/:id" element={<DetalhesVenda/>} />
               <Route path="/novavenda" element={<NovaVenda/>} />
               {/* <Route path="/editarvenda" element={<NovaVenda/>} /> */}
               

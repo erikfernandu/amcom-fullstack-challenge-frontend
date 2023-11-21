@@ -1,7 +1,7 @@
-// NovaVenda.js
-
+// detalhes-venda.js
 import React, { useState, useEffect } from 'react';
-import './css/vendas.css'; // Importe o arquivo de estilos
+import { useParams } from 'react-router-dom';
+import './css/vendas.css';
 
 const NovaVenda = () => {
 
@@ -11,16 +11,11 @@ const NovaVenda = () => {
   const [clienteSelecionado, setClienteSelecionado] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-
-  const getCurrentDateTime = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  const { venda } = useParams();
+  
+  const handleResultClick = (result) => {
+    setSearchTerm(result.descricao || '');
+    setSearchResults([]);
   };
 
   useEffect(() => {
@@ -41,6 +36,11 @@ const NovaVenda = () => {
     }
   }, [searchTerm]);
 
+  const handleVendedoresChange = (event) => {
+    const selectedValue = event.target.value;
+    setVendedorSelecionado(selectedValue);
+  };
+
   useEffect(() => {
     const apiUrl = 'http://127.0.0.1:8000/api/vendedores/';
     fetch(apiUrl)
@@ -49,6 +49,11 @@ const NovaVenda = () => {
       .catch(error => console.error('Erro ao obter vendedores:', error));
   }, []);
 
+  const handleClientesChange = (event) => {
+    const selectedValue = event.target.value;
+    setClienteSelecionado(selectedValue);
+  };
+
   useEffect(() => {
     const apiUrl = 'http://127.0.0.1:8000/api/clientes/';
     fetch(apiUrl)
@@ -56,21 +61,6 @@ const NovaVenda = () => {
       .then(data => setClientes(data))
       .catch(error => console.error('Erro ao obter clientes:', error));
   }, []);
-
-  const handleResultClick = (result) => {
-    setSearchTerm(result.descricao || '');
-    setSearchResults([]);
-  };
-
-  const handleVendedoresChange = (event) => {
-    const selectedValue = event.target.value;
-    setVendedorSelecionado(selectedValue);
-  };
-
-  const handleClientesChange = (event) => {
-    const selectedValue = event.target.value;
-    setClienteSelecionado(selectedValue);
-  };
 
   return (
     <div className="nova-venda-container">
@@ -110,7 +100,7 @@ const NovaVenda = () => {
           {/* Conteúdo da seção de Dados da Venda */}
           <div className="data-hora">
             <label htmlFor='data'>Data e hora da venda:</label>
-            <input id='data' type="datetime-local" defaultValue={getCurrentDateTime()} />
+            <input id='data' type="datetime-local" />
           </div>
           <div className="vendedor">
             <label htmlFor='vendedoresSelect'>Escolha um vendedor:</label>
@@ -140,7 +130,7 @@ const NovaVenda = () => {
           </div>
           <div className="botoes">
             <button>Cancelar</button>
-            <button>Finalizar</button>
+            <button>Salvar</button>
           </div>
         </div>
       </div>
