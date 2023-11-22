@@ -35,13 +35,6 @@
   margin-bottom: 20px;
 }
 
-.total-venda{
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  height: 20vh;
-}
-
 .buscar input,
 .quantidade input,
 .data-hora input,
@@ -52,23 +45,28 @@
   box-sizing: border-box;
 }
 
+.total-venda{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 20vh;
+}
+
 .botoes {
   display: flex;
   justify-content: flex-end;
 }
 
-/* NovaVenda.css */
-
 .buscar-quantidade {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start; /* Alinhe os itens ao início do contêiner */
+  align-items: flex-start;
   margin-bottom: 15px;
 }
 
 .buscar,
 .quantidade {
-  flex-basis: calc(49% - 5px); /* Ajuste conforme necessário, considere a margem entre os elementos */
+  flex-basis: calc(49% - 5px);
 }
 
 .buscar label,
@@ -89,7 +87,7 @@
 
 .button-container {
   display: flex;
-  align-items: flex-start; /* Alinhe os itens ao início do contêiner */
+  align-items: flex-start;
 }
 
 input, select{
@@ -111,23 +109,23 @@ input, select{
 .produtos-labels,
 .produtos-adicionados {
   display: grid;
-  grid-template-columns: 1.5fr 0.5fr 0.7fr 0.5fr 0.1fr; /* Distribui as colunas igualmente */
-  gap: 8px; /* Espaçamento entre as colunas */
-  align-items: center; /* Alinha itens verticalmente ao centro */
+  grid-template-columns: 1.5fr 0.5fr 0.7fr 0.5fr 0.1fr;
+  gap: 8px;
+  align-items: center;
   border: none;
   width: 100%;
 }
 
 .produto-label,
 .produto-adicionado {
-  display: contents; /* Permite que os filhos se comportem como se fossem descendentes diretos do grid */
+  display: contents;
 }
 
 .produto-adicionado span,
 .produto-label span {
-  overflow: hidden; /* Impede que o conteúdo ultrapasse os limites do contêiner */
-  white-space: nowrap; /* Evita que o texto quebre em várias linhas */
-  text-overflow: ellipsis; /* Adiciona reticências (...) para indicar que o texto foi cortado */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .produto-adicionado button {
@@ -150,7 +148,6 @@ input, select{
   border-radius: 4px;
 }
 
-/* Estilos para a lista de resultados */
 ul {
   list-style: none;
   padding: 0;
@@ -164,11 +161,11 @@ ul {
   width: 100%;
   z-index: 1;
   background-color: #fff;
-  display: none; /* Ocultar por padrão */
+  display: none;
 }
 
 .buscar input:focus + ul {
-  display: block; /* Exibir quando a caixa de pesquisa estiver em foco */
+  display: block;
 }
 
 li {
@@ -193,7 +190,7 @@ li:hover {
 }
 
 .botao-link:hover {
-  background-color: #760516; /* Altere a cor de fundo ao passar o mouse, se necessário */
+  background-color: #760516;
 }
 
 .success-message-container {
@@ -202,8 +199,8 @@ li:hover {
   top: 20%;
   right: 10px;
   transform: translateY(-50%);
-  background-color: #317776; /* Cor verde com 80% de opacidade */
-  color: #fff; /* Cor do texto branco */
+  background-color: #317776;
+  color: #fff;
   padding: 25px 50px;
   border-radius: 5px;
   display: flex;
