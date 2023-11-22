@@ -11,15 +11,14 @@ import Comissoes from './componentes/comissoes/lista-comissoes.js'
 // Estilo
 import './App.css';
 
-
 const App = () => {
   const [collapsed, setCollapsed] = useState(true);
   const [titulo, setTitulo] = useState("");
-
+  // Controle de estado do sidebar pela aplicação
   const handleToggleCollapse = () => {
     setCollapsed(!collapsed);
   };
-
+  // Controle de estado do título pela aplicação
   const handleSetTitulo = (titulo) => {
     setTitulo(titulo);
   };
@@ -34,10 +33,8 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Vendas onSetTitulo={handleSetTitulo}/>} />
               <Route path="/vendas" element={<Vendas onSetTitulo={handleSetTitulo}/>} />
-              <Route path="/detalhes/:id" element={<DetalhesVenda onSetTitulo={handleSetTitulo}/>} />
-              <Route path="/novavenda" element={<NovaVenda onSetTitulo={handleSetTitulo}/>} />
-              {/* <Route path="/editarvenda" element={<NovaVenda/>} /> */}
-              
+              <Route path="/detalhes/:vendaId" element={<DetalhesVenda onSetTitulo={handleSetTitulo}/>} />
+              <Route path="/novavenda" element={<NovaVenda onSetTitulo={handleSetTitulo}/>} />              
               <Route path="/comissoes" element={<Comissoes onSetTitulo={handleSetTitulo}/>} />
             </Routes>
           </div>

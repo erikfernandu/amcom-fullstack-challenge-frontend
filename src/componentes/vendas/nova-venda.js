@@ -1,15 +1,13 @@
-// NovaVenda.js
-
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { faTrash, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { Link, useNavigate } from 'react-router-dom';
 import { formatarValor } from '../../utilitario';
 import axios from 'axios';
 import './css/vendas.css';
 
 const NovaVenda = ({ onSetTitulo }) => {
-
+  // Estados a serem controlados
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
@@ -20,8 +18,11 @@ const NovaVenda = ({ onSetTitulo }) => {
   const [vendedorSelecionado, setVendedorSelecionado] = useState('');
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState('');
+  const [botaoDesabilitado, setBotaoDesabilitado] = useState(true);
+  const navigate = useNavigate();
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-
+  const [successMessage, setSuccessMessage] = useState('');
+  // Carregar os dados da venda
   useEffect(() => {
     onSetTitulo("Nova Venda");
   }, [onSetTitulo]);
@@ -36,7 +37,7 @@ const NovaVenda = ({ onSetTitulo }) => {
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
-
+  // Pesquisa do produto por termo
   const handleResultClick = async (result) => {
     try {
       setProdutoSelecionado(result);
@@ -67,7 +68,7 @@ const NovaVenda = ({ onSetTitulo }) => {
       setSearchResults([]);
     }
   }, [searchTerm]);
-
+  // Adição de produto à venda
   const handleAdicionarProduto = () => {
     if (produtoSelecionado && quantidadeAtual > 0) {
       const valorProduto = produtoSelecionado.valor || 0;
@@ -86,7 +87,7 @@ const NovaVenda = ({ onSetTitulo }) => {
       setSearchResults([]);
     }
   };
-
+  // Exclusão de produto da venda
   const handleExcluirProduto = (index) => {
     if (index >= 0 && index < produtosAdicionados.length) {
       const produtoRemovido = produtosAdicionados[index];
@@ -101,7 +102,7 @@ const NovaVenda = ({ onSetTitulo }) => {
       setProdutosAdicionados(novosProdutos);
     }
   };
-
+  // Consulta à API pela lista de vendedores
   const handleVendedoresChange = (event) => {
     const selectedValue = event.target.value;
     setVendedorSelecionado(selectedValue);
@@ -114,7 +115,7 @@ const NovaVenda = ({ onSetTitulo }) => {
       .then(data => setVendedores(data))
       .catch(error => console.error('Erro ao obter vendedores:', error));
   }, []);
-
+  // Consulta à api pela lista de clientes
   const handleClientesChange = (event) => {
     const selectedValue = event.target.value;
     setClienteSelecionado(selectedValue);
@@ -127,11 +128,20 @@ const NovaVenda = ({ onSetTitulo }) => {
       .then(data => setClientes(data))
       .catch(error => console.error('Erro ao obter clientes:', error));
   }, []);
+  // Controle de estado do botão para finalizar venda
+  useEffect(() => {
+    setBotaoDesabilitado(!(vendedorSelecionado && clienteSelecionado && valorTotal > 0));
+  }, [vendedorSelecionado, clienteSelecionado, valorTotal]);
 
+  const getRandomNotaFiscal = () => {
+    const randomNumber = Math.floor(Math.random() * 1000000000);
+    return randomNumber.toString().padStart(9, '0');
+  };
+  // Finalizar a venda
   const handleFinalizarVenda = async () => {
     try {
       const vendaData = {
-        num_notafiscal: '111111111',
+        num_notafiscal: getRandomNotaFiscal(),
         vendedor: vendedorSelecionado,
         cliente: clienteSelecionado,
         produtos: produtosAdicionados.map(item => ({
@@ -141,20 +151,37 @@ const NovaVenda = ({ onSetTitulo }) => {
       };
 
       const response = await axios.post('http://127.0.0.1:8000/api/novavenda/', vendaData);
-
-      setShowSuccessMessage(true);
-      setTimeout(() => {
-        setShowSuccessMessage(false);
-      }, 3000);
+      // Tratamento de resposta da API
+      if (response.status === 201) {
+        setSuccessMessage(response.data.message);
+        setShowSuccessMessage(true);
+        setTimeout(() => {
+          navigate('/vendas');
+          setShowSuccessMessage(false);
+          setSuccessMessage('');
+        }, 3000);
+      } else {
+        setSuccessMessage(response.data)
+        setShowSuccessMessage(true);
+      }
 
     } catch (error) {
-      console.error('Erro ao finalizar a venda:', error);
+      setSuccessMessage(error);
+        setShowSuccessMessage(true);
     }
   };
 
   return (
     <div className="nova-venda-container">
       <div className="produtos-section">
+        {showSuccessMessage && (
+          <div className="success-message-container">
+            <FontAwesomeIcon icon={faCheckCircle} className="success-message-icon" />
+            <div className="success-message">
+              {successMessage}
+            </div>
+          </div>
+        )}
         <h2>Produtos</h2>
         <div className="buscar-quantidade">
           <div className="buscar">
@@ -242,7 +269,7 @@ const NovaVenda = ({ onSetTitulo }) => {
             Cancelar
           </Link>
             
-            <button onClick={handleFinalizarVenda}>Finalizar</button>
+            <button onClick={handleFinalizarVenda} disabled={botaoDesabilitado} style={{backgroundColor: botaoDesabilitado ? '#dddddd' : '#317776',backgroudColor: botaoDesabilitado ? '#aaaaaa' : 'black'}}>Finalizar</button>
           </div>
         </div>
       </div>

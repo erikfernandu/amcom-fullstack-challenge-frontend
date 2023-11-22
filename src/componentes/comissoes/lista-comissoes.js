@@ -6,19 +6,19 @@ import { formatarValor } from '../../utilitario';
 import './css/comissoes.css';
 
 const ListaComissoes = ({ onSetTitulo }) => {
+  // Controle de estados
   const [isSearching, setIsSearching] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [comissoes, setComissoes] = useState([]);
   const [totalComissoesPeriodo, setTotalComissoesPeriodo] = useState(0);
-
+  // Título do componente
   useEffect(() => {
     onSetTitulo("Comissões");
   }, [onSetTitulo]);
-
+  // Pesquisa os dados das comissões
   const handleSearch = async () => {
     setIsSearching(true);
-
     try {
       const response = await axios.get('http://127.0.0.1:8000/api/comissoes/', {
         params: {
@@ -26,7 +26,7 @@ const ListaComissoes = ({ onSetTitulo }) => {
           end_date: endDate || null,
         },
       });
-
+      
       const totalPeriodo = response.data.reduce(
         (total, comissao) => total + comissao.total_comissoes,
         0

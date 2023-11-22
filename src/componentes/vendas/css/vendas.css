@@ -39,7 +39,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  height: 25vh;
+  height: 20vh;
 }
 
 .buscar input,
@@ -194,4 +194,36 @@ li:hover {
 
 .botao-link:hover {
   background-color: #760516; /* Altere a cor de fundo ao passar o mouse, se necessário */
+}
+
+.success-message-container {
+  z-index: 1;
+  position: fixed;
+  top: 20%;
+  right: 10px;
+  transform: translateY(-50%);
+  background-color: #317776; /* Cor verde com 80% de opacidade */
+  color: #fff; /* Cor do texto branco */
+  padding: 25px 50px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.success-message-icon {
+  margin-right: 8px;
+}
+
+.success-message {
+  font-size: 14px;
+}
+
+.botao-habilitado {
+  background-color: #317776;
+  color: white;
+}
+
+.botao-desabilitado {
+  background-color: #505050;
+  color: #aaaaaa;
 }

@@ -1,43 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash,faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import { formatarValor } from '../../utilitario';
+import axios from 'axios';
 import './css/lista-vendas.css';
 
 const ListaVendas = ({ onSetTitulo }) => {
-
+  // Estados a serem controlados
   const [vendas, setDados] = useState([]);
   const [showItens, setShowItens] = useState({});
-
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  // Titulo do componente
   useEffect(() => {
     onSetTitulo("Vendas");
-  }, [onSetTitulo]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/api/vendas/');
-        const data = await response.json();
-        setDados(data);
-      } catch (error) {
-        console.error('Erro ao buscar vendas:', error);
-      }
-    };
     fetchData();
-  }, []);
-
+  }, [onSetTitulo]);
+  // Atualização de dados das vendas
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/vendas/');
+      const data = await response.json();
+      setDados(data);
+    } catch (error) {
+      console.error('Erro ao buscar vendas:', error);
+    }
+  };
+  // Mostrar os detalhes da venda
   const handleVerItens = (vendaId) => {
     setShowItens({
       ...showItens,
       [vendaId]: !showItens[vendaId],
     });
   };
-
+  // Função de exclusão da venda
   const handle_delete = async (vendaId) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/venda/${vendaId}`);
+      const response = await axios.delete(`http://127.0.0.1:8000/api/venda/${vendaId}`);
+      // Tratamento de mensagem da API
+      if (response.status === 204) {
+        setSuccessMessage('VENDA REMOVIDA COM SUCESSO!');
+        setShowSuccessMessage(true);
+        fetchData();
+
+        setTimeout(() => {
+          setShowSuccessMessage(false);
+          setSuccessMessage('');
+        }, 3000);
+      }
       
     } catch (error) {
       console.error('Erro ao excluir venda:', error);
@@ -47,6 +58,14 @@ const ListaVendas = ({ onSetTitulo }) => {
   return (
     <div>
       <div className="container-header">
+        {showSuccessMessage && (
+          <div className="success-message-container">
+            <FontAwesomeIcon icon={faCheckCircle} className="success-message-icon" />
+            <div className="success-message">
+              {successMessage}
+            </div>
+          </div>
+        )}
         <h2 className="header-subtitle">Vendas Realizadas</h2>
         <Link to="/novavenda"><button className="inserir-btn">Inserir nova Venda</button></Link>
       </div>

@@ -15,10 +15,10 @@
 }
 
 .title {
-  flex-grow: 0.8; /* Add this to allow the title to take up remaining space and center itself */
+  flex-grow: 0.6;
   color: #317776;
   text-align: center;
-  margin: 0; /* Reset margin to remove any default margin */
+  margin: 0;
 }
 
 .menu-icon {
