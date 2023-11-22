@@ -1,39 +1,48 @@
 
 # Papelaria AMCom
 
-    Aplicação Front-end para gestão de venda e apuração de comissões dos vendedores.
+    Bem-vindo à aplicação front-end da Papelaria AMCom, projetada para a gestão de vendas e apuração de comissão das vendas.
 
 # Pré-requisitos
+
+    Certifique-se de ter as seguintes dependências instaladas em seu ambiente de desenvolvimento:
 
     ## npm (3.11.2)
     ## fontawesome-svg-core (6.4.2)
     ## react-fontawesome (0.2.0)
+    ## react-router-dom (6.19.0)
     ## axios (1.6.2)
-    ## date-fns
 
 # Instalação
 
-    Primeiro, é necessário realizar o download do projeto via github, por meio do comando:
+    1. Faça o download do projeto via GitHub usando o seguinte comando:
 
         git clone --depth 1 https://github.com/erikfernandu/amcom-fullstack-challenge-frontend.git
 
-    Como boa prática, realize o processo de ativação do ambiente virtual:
-
-        source venv/bin/activate.sh
+    2. npm install
 
 # Configuração
 
-    npm
+    1. cd amcom-fullstack-challenge-frontend
 
 # Uso
 
-    python3 manage.py runserver
+    Inicie o servidor local com o comando:
 
-# Licença
+        npm start
 
-    Indique a licença sob a qual o seu projeto está disponível. Por exemplo, MIT, Apache, etc.
+    Acesse a aplicação em seu navegador através do link http://localhost:3000.
+
+# Contribuições
+
+    Sinta-se à vontade para contribuir para este projeto! Abra problemas (issues) e envie pull requests para melhorar nosso código.
 
 # Contato
 
-    Forneça informações de contato para que os desenvolvedores possam entrar em contato com você em caso de dúvidas ou problemas.
+    Em caso de dúvidas ou problemas, sinta-se à vontade para entrar em contato:
 
+        Nome: Erik Morais
+        E-mail: erikfernandu@outlook.com
+        Linkedin: https://www.linkedin.com/in/erik-fernando-morais-dos-santos-66911b246/
+
+    Fique à vontade para explorar, modificar e aprimorar nosso código. Agradecemos sua contribuição!
