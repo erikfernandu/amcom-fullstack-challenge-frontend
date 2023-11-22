@@ -10,6 +10,7 @@ const ListaComissoes = ({ onSetTitulo }) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [comissoes, setComissoes] = useState([]);
+  const [totalComissoesPeriodo, setTotalComissoesPeriodo] = useState(0);
 
   useEffect(() => {
     onSetTitulo("Comissões");
@@ -25,7 +26,15 @@ const ListaComissoes = ({ onSetTitulo }) => {
           end_date: endDate || null,
         },
       });
+
+      const totalPeriodo = response.data.reduce(
+        (total, comissao) => total + comissao.total_comissoes,
+        0
+      );
+
       setComissoes(response.data);
+      setTotalComissoesPeriodo(totalPeriodo);
+
     } catch (error) {
       console.error('Erro ao buscar comissões:', error);
     } finally {
@@ -64,7 +73,7 @@ const ListaComissoes = ({ onSetTitulo }) => {
             ))}
             <div className="grid-footer">
               <div>Total de comissões do período</div>
-              <div>R$ 1000,00</div>
+              <div>{totalComissoesPeriodo !== null ? formatarValor(totalComissoesPeriodo) : '0,00'}</div>
             </div>
           </div>
           ) : (

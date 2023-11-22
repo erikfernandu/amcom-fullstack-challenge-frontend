@@ -20,6 +20,7 @@ const NovaVenda = ({ onSetTitulo }) => {
   const [vendedorSelecionado, setVendedorSelecionado] = useState('');
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState('');
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   useEffect(() => {
     onSetTitulo("Nova Venda");
@@ -130,7 +131,7 @@ const NovaVenda = ({ onSetTitulo }) => {
   const handleFinalizarVenda = async () => {
     try {
       const vendaData = {
-        dataehora: getCurrentDateTime(),
+        num_notafiscal: '111111111',
         vendedor: vendedorSelecionado,
         cliente: clienteSelecionado,
         produtos: produtosAdicionados.map(item => ({
@@ -141,9 +142,11 @@ const NovaVenda = ({ onSetTitulo }) => {
 
       const response = await axios.post('http://127.0.0.1:8000/api/novavenda/', vendaData);
 
-      console.log('Venda finalizada com sucesso:', response.data);
+      setShowSuccessMessage(true);
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 3000);
 
-      // Lógica adicional, como redirecionar ou limpar o estado, se necessário
     } catch (error) {
       console.error('Erro ao finalizar a venda:', error);
     }

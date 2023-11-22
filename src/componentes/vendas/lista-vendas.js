@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { formatarValor } from '../../utilitario';
 import './css/lista-vendas.css';
 
@@ -36,24 +37,10 @@ const ListaVendas = ({ onSetTitulo }) => {
 
   const handle_delete = async (vendaId) => {
     try {
-      const url = `http://127.0.0.1:8000/api/venda/${vendaId}`;
-      const response = await fetch(url, {
-        method: 'DELETE',
-        headers: {'Content-Type': 'application/json'},
-      });
-  
-      if (response.ok) {
-        console.log('Item excluído com sucesso');
-        const novasVendas = vendas.filter(item => item.id !== vendaId);
-        setDados(novasVendas);
-      } else {
-        console.error('Falha ao excluir o item:', response.statusText);
-        if (response.status === 404) {
-        } else if (response.status === 500) {
-        }
-      }
+      await axios.delete(`http://127.0.0.1:8000/api/venda/${vendaId}`);
+      
     } catch (error) {
-      console.error('Erro ao excluir o item:', error.message);
+      console.error('Erro ao excluir venda:', error);
     }
   };
   
