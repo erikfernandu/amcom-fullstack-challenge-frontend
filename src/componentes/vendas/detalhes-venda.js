@@ -6,7 +6,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import './css/vendas.css';
 
-const NovaVenda = () => {
+const NovaVenda = ({ onSetTitulo }) => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -17,6 +17,10 @@ const NovaVenda = () => {
   const [vendedorSelecionado, setVendedorSelecionado] = useState('');
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState('');
+
+  useEffect(() => {
+    onSetTitulo("Alterar Venda - Nº ");
+  }, [onSetTitulo]);
 
   const getCurrentDateTime = () => {
     const now = new Date();

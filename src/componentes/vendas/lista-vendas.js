@@ -2,12 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { formatarValor } from '../../utilitario';
 import './css/lista-vendas.css';
 
-const ListaVendas = () => {
+const ListaVendas = ({ onSetTitulo }) => {
 
   const [vendas, setDados] = useState([]);
   const [showItens, setShowItens] = useState({});
+
+  useEffect(() => {
+    onSetTitulo("Vendas");
+  }, [onSetTitulo]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,17 +102,15 @@ const ListaVendas = () => {
                   {venda.dataehora}
                 </div>
                 <div className="tabela-cell">
-                  R$ {venda.valor_total}
+                  {formatarValor(venda.valor_total)}
                 </div>
                 <div className="tabela-cell">
                   <button className="verBtn" onClick={() => handleVerItens(venda.id)}>
-                  {showItens[venda.id] ? 'Fechar' : 'Ver Itens'}
+                    {showItens[venda.id] ? 'Fechar' : 'Ver Itens'}
                   </button>
-                  <Link to={`/detalhes/${venda.id}`}>
-                    <a className="editarBtn">
-                        <FontAwesomeIcon icon={faEdit}/>
-                      </a>
-                  </Link>                  
+                  <a href={`/detalhes/${venda.id}`} className="editarBtn">
+                    <FontAwesomeIcon icon={faEdit}/>
+                  </a>
                   <a className="excluirBtn" onClick={() => handle_delete(venda.id)}>
                     <FontAwesomeIcon icon={faTrash}/>
                   </a>
@@ -127,23 +130,23 @@ const ListaVendas = () => {
                       </tr>
                     </thead>
                     <tbody>
-                    {venda.itemvenda_set.map((item) => (
-                      <tr key={item.id}>
+                    {venda.itemvenda_set.map((item, index) => (
+                      <tr key={`item_${item.id || index}`}>
                         <td>{item.produto.descricao}</td>
                         <td>{item.quantidade}</td>
-                        <td>R$ {item.produto.valor}</td>
-                        <td>R$ {item.quantidade * item.produto.valor}</td>
-                        <td>{item.produto.comissao}</td>
-                        <td>R$ {((item.quantidade * item.produto.valor)*item.produto.comissao) /100}</td>
+                        <td>{formatarValor(item.produto.valor)}</td>
+                        <td>{formatarValor(item.quantidade * item.produto.valor)}</td>
+                        <td>{item.produto.comissao} %</td>
+                        <td>{formatarValor(((item.quantidade * item.produto.valor)*item.produto.comissao) /100)}</td>
                       </tr>
                     ))}
                     <tr>
                       <td><strong>Total da venda</strong></td>
                       <td><strong>{venda.total_itens}</strong></td>
                       <td></td>
-                      <td><strong>R$ {venda.valor_total}</strong></td>
+                      <td><strong>{formatarValor(venda.valor_total)}</strong></td>
                       <td></td>
-                      <td><strong>R$ {venda.total_comissao}</strong></td>
+                      <td><strong>{formatarValor(venda.valor_total_comissoes)}</strong></td>
                     </tr>
                     </tbody>
                   </table>

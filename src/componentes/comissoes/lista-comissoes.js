@@ -1,22 +1,36 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { formatarValor } from '../../utilitario';
 import './css/comissoes.css';
 
-const ListaComissoes = () => {
+const ListaComissoes = ({ onSetTitulo }) => {
   const [isSearching, setIsSearching] = useState(false);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [comissoes, setComissoes] = useState([]);
 
-  const handleSearch = () => {
-    // Implementar lógica de pesquisa aqui
+  useEffect(() => {
+    onSetTitulo("Comissões");
+  }, [onSetTitulo]);
+
+  const handleSearch = async () => {
     setIsSearching(true);
-  };
 
-  const exemploRegistro = {
-    codigo: 1,
-    vendedor: 'Nome do Vendedor',
-    totalVendas: 1000,
-    totalComissoes: 100,
-    valorTotal: 900,
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/comissoes/', {
+        params: {
+          start_date: startDate || null,
+          end_date: endDate || null,
+        },
+      });
+      setComissoes(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar comissões:', error);
+    } finally {
+      setIsSearching(true);
+    }
   };
 
   return (
@@ -24,8 +38,8 @@ const ListaComissoes = () => {
       <div className="container-header">
         <h2 className="header-subtitle">Relatório de Comissões</h2>
         <div className="input-container">
-            <input type="date" />
-            <input type="date" />
+          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
           <button className="searchBtn" onClick={handleSearch}>
             <FontAwesomeIcon icon={faSearch} />
           </button>
@@ -40,18 +54,14 @@ const ListaComissoes = () => {
               <div>Total de Vendas</div>
               <div>Total de Comissões</div>
             </div>
-            <div className="grid-item">
-              <div>{exemploRegistro.codigo}</div>
-              <div>{exemploRegistro.vendedor}</div>
-              <div>{exemploRegistro.totalVendas}</div>
-              <div>{exemploRegistro.totalComissoes}</div>
-            </div>
-            <div className="grid-item">
-              <div>{exemploRegistro.codigo}</div>
-              <div>{exemploRegistro.vendedor}</div>
-              <div>{exemploRegistro.totalVendas}</div>
-              <div>{exemploRegistro.totalComissoes}</div>
-            </div>
+            {comissoes.map((comissao) => (
+              <div className="grid-item" key={comissao.id}>
+                <div>{comissao.codigo}</div>
+                <div>{comissao.nome}</div>
+                <div>{formatarValor(comissao.total_vendas)}</div>
+                <div>{formatarValor(comissao.total_comissoes)}</div>
+              </div>
+            ))}
             <div className="grid-footer">
               <div>Total de comissões do período</div>
               <div>R$ 1000,00</div>

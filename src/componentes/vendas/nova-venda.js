@@ -4,9 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { formatarValor } from '../../utilitario';
+import axios from 'axios';
 import './css/vendas.css';
 
-const NovaVenda = () => {
+const NovaVenda = ({ onSetTitulo }) => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -18,6 +20,10 @@ const NovaVenda = () => {
   const [vendedorSelecionado, setVendedorSelecionado] = useState('');
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState('');
+
+  useEffect(() => {
+    onSetTitulo("Nova Venda");
+  }, [onSetTitulo]);
 
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -121,6 +127,28 @@ const NovaVenda = () => {
       .catch(error => console.error('Erro ao obter clientes:', error));
   }, []);
 
+  const handleFinalizarVenda = async () => {
+    try {
+      const vendaData = {
+        dataehora: getCurrentDateTime(),
+        vendedor: vendedorSelecionado,
+        cliente: clienteSelecionado,
+        produtos: produtosAdicionados.map(item => ({
+          produto: item.produto.id,
+          quantidade: item.quantidade,
+        })),
+      };
+
+      const response = await axios.post('http://127.0.0.1:8000/api/novavenda/', vendaData);
+
+      console.log('Venda finalizada com sucesso:', response.data);
+
+      // Lógica adicional, como redirecionar ou limpar o estado, se necessário
+    } catch (error) {
+      console.error('Erro ao finalizar a venda:', error);
+    }
+  };
+
   return (
     <div className="nova-venda-container">
       <div className="produtos-section">
@@ -130,8 +158,8 @@ const NovaVenda = () => {
             <label htmlFor='buscar'>Buscar pelo código de barras ou descrição:</label>
             <input id='buscar' type="text" placeholder="Digite aqui" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
             <ul>
-            {searchResults.map((result) => (
-              <li key={result.id} onMouseDown={() => handleResultClick(result)}>
+            {searchResults.map((result, index) => (
+              <li key={`searchResult_${result.id || index}`} onMouseDown={() => handleResultClick(result)}>
                 {result.descricao}
               </li>
             ))}
@@ -159,12 +187,12 @@ const NovaVenda = () => {
           <div>
           </div>
           {produtosAdicionados.map((item, index) => (
-            <div key={index} className="produto-adicionado">
+            <div key={`produtoAdicionado_${index}`} className="produto-adicionado">
               <span>{item.produto.descricao}</span>
               <span>{item.quantidade}</span>
-              <span>R$ {item.produto.valor}</span>
-              <span>R$ {item.quantidade * item.produto.valor}</span>
-              <a href="#" className="excluirBtn" onClick={() => handleExcluirProduto(index)}><FontAwesomeIcon icon={faTrash}/></a>
+              <span>{formatarValor(item.produto.valor)}</span>
+              <span>{formatarValor(item.quantidade * item.produto.valor)}</span>
+              <a className="excluirBtn" onClick={() => handleExcluirProduto(index)}><FontAwesomeIcon icon={faTrash}/></a>
             </div>
           ))}
         </div>
@@ -204,14 +232,14 @@ const NovaVenda = () => {
           </div>
           <div className="total-venda">
             <h3>Valor total da venda</h3>
-            <h2>R$ {valorTotal.toFixed(2)}</h2>
+            <h2>{formatarValor(valorTotal.toFixed(2))}</h2>
           </div>
           <div className="botoes">
           <Link to="/vendas" className="botao-link">
             Cancelar
           </Link>
             
-            <button>Finalizar</button>
+            <button onClick={handleFinalizarVenda}>Finalizar</button>
           </div>
         </div>
       </div>

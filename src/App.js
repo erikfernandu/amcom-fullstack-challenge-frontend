@@ -14,26 +14,31 @@ import './App.css';
 
 const App = () => {
   const [collapsed, setCollapsed] = useState(true);
+  const [titulo, setTitulo] = useState("");
 
   const handleToggleCollapse = () => {
     setCollapsed(!collapsed);
   };
 
+  const handleSetTitulo = (titulo) => {
+    setTitulo(titulo);
+  };
+
   return (
     <Router>
       <div>
-      <Header onToggleCollapse={handleToggleCollapse} />
+      <Header onToggleCollapse={handleToggleCollapse} titulo={titulo} />
         <div style={{ display: 'flex' }}>
           <Sidebar collapsed={collapsed}/>
           <div className='content'>
             <Routes>
-              <Route path="/" element={<Vendas/>} />
-              <Route path="/vendas" element={<Vendas/>} />
-              <Route path="/detalhes/:id" element={<DetalhesVenda/>} />
-              <Route path="/novavenda" element={<NovaVenda/>} />
+              <Route path="/" element={<Vendas onSetTitulo={handleSetTitulo}/>} />
+              <Route path="/vendas" element={<Vendas onSetTitulo={handleSetTitulo}/>} />
+              <Route path="/detalhes/:id" element={<DetalhesVenda onSetTitulo={handleSetTitulo}/>} />
+              <Route path="/novavenda" element={<NovaVenda onSetTitulo={handleSetTitulo}/>} />
               {/* <Route path="/editarvenda" element={<NovaVenda/>} /> */}
               
-              <Route path="/comissoes" element={<Comissoes/>} />
+              <Route path="/comissoes" element={<Comissoes onSetTitulo={handleSetTitulo}/>} />
             </Routes>
           </div>
         </div>
