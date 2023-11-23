@@ -1,59 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { formatarValor, formatarDataEHora } from '../../utilitario';
+import { Link, useNavigate } from 'react-router-dom';
+import { formatarValor } from '../utilitarios/functions';
 import axios from 'axios';
 import './css/vendas.css';
 
-const DetalhesVenda = ({ onSetTitulo }) => {
+const NovaVenda = ({ onSetTitulo }) => {
   // Estados a serem controlados
-  const { vendaId } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [produtosAdicionados, setProdutosAdicionados] = useState([]);
   const [quantidadeAtual, setQuantidadeAtual] = useState(0);
-  const [dataEHoraVenda, setDataEHoraVenda] = useState(null);
+  const [valorTotal, setValorTotal] = useState(0);
   const [vendedores, setVendedores] = useState([]);
   const [vendedorSelecionado, setVendedorSelecionado] = useState('');
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState('');
-  const [valorTotal, setValorTotal] = useState(0);
   const [botaoDesabilitado, setBotaoDesabilitado] = useState(true);
   const navigate = useNavigate();
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   // Carregar os dados da venda
   useEffect(() => {
-    if (vendaId) {
-      const fetchVendaDetails = async () => {
-        try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/venda/${vendaId}`);
-          const vendaDetalhes = response.data;
-          const produtosDaVenda = vendaDetalhes.itemvenda_set.map(item => ({
-            produto: item.produto,
-            quantidade: item.quantidade,
-            valor_total: item.valor_total
-          }));
+    onSetTitulo("Nova Venda");
+  }, [onSetTitulo]);
 
-          onSetTitulo(`Alterar Venda N°: ${vendaDetalhes.num_notafiscal}`);
-          setVendedorSelecionado(vendaDetalhes.vendedor);
-          setClienteSelecionado(vendaDetalhes.cliente);
-          setProdutosAdicionados(produtosDaVenda);
-          setValorTotal(vendaDetalhes.valor_total);
-          setDataEHoraVenda(formatarDataEHora(vendaDetalhes.dataehora));
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
 
-          console.log('Detalhes da venda', vendaDetalhes)
-
-        } catch (error) {
-          console.error('Erro ao buscar detalhes da venda:', error);
-        }
-      };
-      fetchVendaDetails();
-    }
-
-  }, [onSetTitulo, vendaId]);
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
   // Pesquisa do produto por termo
   const handleResultClick = async (result) => {
     try {
@@ -119,7 +102,7 @@ const DetalhesVenda = ({ onSetTitulo }) => {
       setProdutosAdicionados(novosProdutos);
     }
   };
-// Consulta à API pela lista de vendedores
+  // Consulta à API pela lista de vendedores
   const handleVendedoresChange = (event) => {
     const selectedValue = event.target.value;
     setVendedorSelecionado(selectedValue);
@@ -161,19 +144,20 @@ const DetalhesVenda = ({ onSetTitulo }) => {
         num_notafiscal: getRandomNotaFiscal(),
         vendedor: vendedorSelecionado,
         cliente: clienteSelecionado,
-        produtos: produtosAdicionados.map(item => ({
+        itemvenda_set: produtosAdicionados.map(item => ({
           produto: item.produto.id,
           quantidade: item.quantidade,
         })),
       };
 
-      const response = await axios.post('http://127.0.0.1:8000/api/novavenda/', vendaData);
+      const response = await axios.post('http://127.0.0.1:8000/api/venda-nova/', vendaData);
       // Tratamento de resposta da API
       if (response.status === 201) {
         setSuccessMessage(response.data.message);
         setShowSuccessMessage(true);
+
+        navigate(`/vendas?mensagem=VENDA CADASTRADA COM SUCESSO`);
         setTimeout(() => {
-          navigate('/vendas');
           setShowSuccessMessage(false);
           setSuccessMessage('');
         }, 3000);
@@ -183,22 +167,15 @@ const DetalhesVenda = ({ onSetTitulo }) => {
       }
 
     } catch (error) {
-      setSuccessMessage(error);
-        setShowSuccessMessage(true);
+      const errorMessage = error.message || 'ERRO AO PROCESSAR REQUISIÇÃO.';
+      setSuccessMessage(errorMessage);
+      setShowSuccessMessage(true);
     }
   };
 
   return (
     <div className="nova-venda-container">
       <div className="produtos-section">
-        {showSuccessMessage && (
-          <div className="success-message-container">
-            <FontAwesomeIcon icon={faCheckCircle} className="success-message-icon" />
-            <div className="success-message">
-              {successMessage}
-            </div>
-          </div>
-        )}
         <h2>Produtos</h2>
         <div className="buscar-quantidade">
           <div className="buscar">
@@ -252,8 +229,8 @@ const DetalhesVenda = ({ onSetTitulo }) => {
         <div className="dados-venda-container">
           {/* Conteúdo da seção de Dados da Venda */}
           <div className="data-hora">
-            <label htmlFor="data">Data e hora da venda:</label>
-            <input id="data" type="datetime-local" value={dataEHoraVenda || ''} onChange={(e) => setDataEHoraVenda(e.target.value)}/>
+            <label htmlFor='data'>Data e hora da venda:</label>
+            <input id='data' type="datetime-local" defaultValue={getCurrentDateTime()} />
           </div>
           <div className="vendedor">
             <label htmlFor='vendedoresSelect'>Escolha um vendedor:</label>
@@ -285,6 +262,7 @@ const DetalhesVenda = ({ onSetTitulo }) => {
           <Link to="/vendas" className="botao-link">
             Cancelar
           </Link>
+            
             <button onClick={handleFinalizarVenda} disabled={botaoDesabilitado} style={{backgroundColor: botaoDesabilitado ? '#dddddd' : '#317776',backgroudColor: botaoDesabilitado ? '#aaaaaa' : 'black'}}>Finalizar</button>
           </div>
         </div>
@@ -293,4 +271,4 @@ const DetalhesVenda = ({ onSetTitulo }) => {
   );
 };
 
-export default DetalhesVenda;
+export default NovaVenda;

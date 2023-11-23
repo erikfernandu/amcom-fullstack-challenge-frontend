@@ -1,52 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { Link, useNavigate } from 'react-router-dom';
-import { formatarValor } from '../../utilitario';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { formatarValor, formatarDataEHora } from '../utilitarios/functions';
 import axios from 'axios';
 import './css/vendas.css';
 
-const NovaVenda = ({ onSetTitulo }) => {
+const DetalhesVenda = ({ onSetTitulo }) => {
   // Estados a serem controlados
+  const { vendaId } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [notaFiscal, setNotaFiscal] = useState([])
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [produtosAdicionados, setProdutosAdicionados] = useState([]);
   const [quantidadeAtual, setQuantidadeAtual] = useState(0);
-  const [valorTotal, setValorTotal] = useState(0);
+  const [dataEHoraVenda, setDataEHoraVenda] = useState(null);
   const [vendedores, setVendedores] = useState([]);
   const [vendedorSelecionado, setVendedorSelecionado] = useState('');
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState('');
+  const [valorTotal, setValorTotal] = useState(0);
   const [botaoDesabilitado, setBotaoDesabilitado] = useState(true);
   const navigate = useNavigate();
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   // Carregar os dados da venda
   useEffect(() => {
-    onSetTitulo("Nova Venda");
-  }, [onSetTitulo]);
+    if (vendaId) {
+      const fetchVendaDetails = async () => {
+        try {
+          const response = await axios.get(`http://127.0.0.1:8000/api/venda-detalhes/${vendaId}`);
+          const vendaDetalhes = response.data;
+          const produtosDaVenda = vendaDetalhes.itemvenda_set.map(item => ({
+            produto: item.produto,
+            quantidade: item.quantidade,
+            valor_total: item.valor_total
+          }));
 
-  const getCurrentDateTime = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
+          setNotaFiscal(vendaDetalhes.num_notafiscal)
+          setVendedorSelecionado(vendaDetalhes.vendedor);
+          setClienteSelecionado(vendaDetalhes.cliente);
+          setProdutosAdicionados(produtosDaVenda);
+          setValorTotal(vendaDetalhes.valor_total);
+          setDataEHoraVenda(formatarDataEHora(vendaDetalhes.dataehora));
+          onSetTitulo(`Alterar Venda N°: ${notaFiscal}`);
+        }
+        catch (error) {
+          console.error('Erro ao buscar detalhes da venda:', error);
+        }
+      };
+      fetchVendaDetails();
+    }
+  }, [onSetTitulo, vendaId]);
   // Pesquisa do produto por termo
   const handleResultClick = async (result) => {
     try {
       setProdutoSelecionado(result);
-
       setSearchTerm(result.descricao || '');
-
       setSearchResults([]);
-
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Erro ao obter detalhes do produto:', error);
     }
   };
@@ -54,9 +68,8 @@ const NovaVenda = ({ onSetTitulo }) => {
   useEffect(() => {
     const fetchApiData = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/produtos/?search=${searchTerm}`);
-        const data = await response.json();
-        setSearchResults(data);
+        const response = await axios.get(`http://127.0.0.1:8000/api/produtos/?search=${searchTerm}`);
+        setSearchResults(response.data);
       } catch (error) {
         console.error('Erro ao buscar dados da API:', error);
       }
@@ -71,16 +84,20 @@ const NovaVenda = ({ onSetTitulo }) => {
   // Adição de produto à venda
   const handleAdicionarProduto = () => {
     if (produtoSelecionado && quantidadeAtual > 0) {
-      const valorProduto = produtoSelecionado.valor || 0;
-      const totalAtualizado = valorTotal + valorProduto * quantidadeAtual;
+      const novoItem = {
+        produto: {
+          id: produtoSelecionado.id || '',
+          codigo: produtoSelecionado.codigo || '',
+          descricao: produtoSelecionado.descricao || '',
+          valor: produtoSelecionado.valor || 0,
+          comissao: produtoSelecionado.comissao || 0,
+        },
+        quantidade: quantidadeAtual,
+      };
+      const totalAtualizado = valorTotal + produtoSelecionado.valor * quantidadeAtual;
       setValorTotal(totalAtualizado);
 
-      setProdutosAdicionados([...produtosAdicionados,
-        {
-          produto: produtoSelecionado,
-          quantidade: quantidadeAtual,
-        },
-      ]);
+      setProdutosAdicionados([...produtosAdicionados, novoItem]);
       setProdutoSelecionado(null);
       setQuantidadeAtual(0);
       setSearchTerm('');
@@ -102,7 +119,7 @@ const NovaVenda = ({ onSetTitulo }) => {
       setProdutosAdicionados(novosProdutos);
     }
   };
-  // Consulta à API pela lista de vendedores
+// Consulta à API pela lista de vendedores
   const handleVendedoresChange = (event) => {
     const selectedValue = event.target.value;
     setVendedorSelecionado(selectedValue);
@@ -110,11 +127,17 @@ const NovaVenda = ({ onSetTitulo }) => {
 
   useEffect(() => {
     const apiUrl = 'http://127.0.0.1:8000/api/vendedores/';
-    fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => setVendedores(data))
-      .catch(error => console.error('Erro ao obter vendedores:', error));
-  }, []);
+    
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(apiUrl);
+        setVendedores(response.data);
+      } catch (error) {
+        console.error('Erro ao obter vendedores:', error);
+      }
+    };
+    fetchData();
+}, []);
   // Consulta à api pela lista de clientes
   const handleClientesChange = (event) => {
     const selectedValue = event.target.value;
@@ -123,40 +146,41 @@ const NovaVenda = ({ onSetTitulo }) => {
 
   useEffect(() => {
     const apiUrl = 'http://127.0.0.1:8000/api/clientes/';
-    fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => setClientes(data))
-      .catch(error => console.error('Erro ao obter clientes:', error));
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(apiUrl);
+        setClientes(response.data);
+      } catch (error) {
+        console.error('Erro ao obter clientes:', error);
+      }
+    };
+    fetchData();
   }, []);
   // Controle de estado do botão para finalizar venda
   useEffect(() => {
     setBotaoDesabilitado(!(vendedorSelecionado && clienteSelecionado && valorTotal > 0));
   }, [vendedorSelecionado, clienteSelecionado, valorTotal]);
-
-  const getRandomNotaFiscal = () => {
-    const randomNumber = Math.floor(Math.random() * 1000000000);
-    return randomNumber.toString().padStart(9, '0');
-  };
   // Finalizar a venda
   const handleFinalizarVenda = async () => {
     try {
       const vendaData = {
-        num_notafiscal: getRandomNotaFiscal(),
+        num_notafiscal: notaFiscal,
+        dataehora: '2023-10-10T10:10:10',
         vendedor: vendedorSelecionado,
         cliente: clienteSelecionado,
-        produtos: produtosAdicionados.map(item => ({
+        itemvenda_set: produtosAdicionados.map(item => ({
           produto: item.produto.id,
           quantidade: item.quantidade,
         })),
       };
-
-      const response = await axios.post('http://127.0.0.1:8000/api/novavenda/', vendaData);
-      // Tratamento de resposta da API
+  
+      const response = await axios.put(`http://127.0.0.1:8000/api/venda-detalhes/${vendaId}/`, vendaData);
+  
       if (response.status === 201) {
         setSuccessMessage(response.data.message);
         setShowSuccessMessage(true);
         setTimeout(() => {
-          navigate('/vendas');
+          navigate(`/vendas?mensagem=VENDA ATUALIZADA COM SUCESSO`);
           setShowSuccessMessage(false);
           setSuccessMessage('');
         }, 3000);
@@ -164,10 +188,10 @@ const NovaVenda = ({ onSetTitulo }) => {
         setSuccessMessage(response.data)
         setShowSuccessMessage(true);
       }
-
     } catch (error) {
-      setSuccessMessage(error);
-        setShowSuccessMessage(true);
+      const errorMessage = error.message || 'OCOREU UM ERRO AO PROCESSAR SUA REQUISIÇÃO.';
+      setSuccessMessage(errorMessage);
+      setShowSuccessMessage(true);
     }
   };
 
@@ -235,8 +259,8 @@ const NovaVenda = ({ onSetTitulo }) => {
         <div className="dados-venda-container">
           {/* Conteúdo da seção de Dados da Venda */}
           <div className="data-hora">
-            <label htmlFor='data'>Data e hora da venda:</label>
-            <input id='data' type="datetime-local" defaultValue={getCurrentDateTime()} />
+            <label htmlFor="data">Data e hora da venda:</label>
+            <input id="data" type="datetime-local" value={dataEHoraVenda || ''} onChange={(e) => setDataEHoraVenda(e.target.value)}/>
           </div>
           <div className="vendedor">
             <label htmlFor='vendedoresSelect'>Escolha um vendedor:</label>
@@ -268,7 +292,6 @@ const NovaVenda = ({ onSetTitulo }) => {
           <Link to="/vendas" className="botao-link">
             Cancelar
           </Link>
-            
             <button onClick={handleFinalizarVenda} disabled={botaoDesabilitado} style={{backgroundColor: botaoDesabilitado ? '#dddddd' : '#317776',backgroudColor: botaoDesabilitado ? '#aaaaaa' : 'black'}}>Finalizar</button>
           </div>
         </div>
@@ -277,4 +300,4 @@ const NovaVenda = ({ onSetTitulo }) => {
   );
 };
 
-export default NovaVenda;
+export default DetalhesVenda;

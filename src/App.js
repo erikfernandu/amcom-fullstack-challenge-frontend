@@ -4,10 +4,10 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // Componentes
 import Header from './componentes/header/header.js';
 import Sidebar from './componentes/sidebar/sidebar.js';
-import Vendas from './componentes/vendas/lista-vendas.js'
-import NovaVenda from './componentes/vendas/nova-venda.js';
-import DetalhesVenda from './componentes/vendas/detalhes-venda.js';
-import Comissoes from './componentes/comissoes/lista-comissoes.js'
+import Vendas from './componentes/vendas/vendas-lista.js'
+import NovaVenda from './componentes/vendas/venda-nova.js';
+import DetalhesVenda from './componentes/vendas/venda-detalhes.js';
+import Comissoes from './componentes/comissoes/comissoes-lista.js';
 // Estilo
 import './App.css';
 

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash,faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
-import { formatarValor } from '../../utilitario';
+import { Link, useLocation } from 'react-router-dom';
+import { formatarValor } from '../utilitarios/functions';
 import axios from 'axios';
 import './css/lista-vendas.css';
 
@@ -12,6 +12,8 @@ const ListaVendas = ({ onSetTitulo }) => {
   const [showItens, setShowItens] = useState({});
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const location = useLocation();
+  const mensagem = new URLSearchParams(location.search).get('mensagem');
   // Titulo do componente
   useEffect(() => {
     onSetTitulo("Vendas");
@@ -37,7 +39,7 @@ const ListaVendas = ({ onSetTitulo }) => {
   // Função de exclusão da venda
   const handle_delete = async (vendaId) => {
     try {
-      const response = await axios.delete(`http://127.0.0.1:8000/api/venda/${vendaId}`);
+      const response = await axios.delete(`http://127.0.0.1:8000/api/venda-detalhes/${vendaId}`);
       // Tratamento de mensagem da API
       if (response.status === 204) {
         setSuccessMessage('VENDA REMOVIDA COM SUCESSO!');
@@ -62,7 +64,7 @@ const ListaVendas = ({ onSetTitulo }) => {
           <div className="success-message-container">
             <FontAwesomeIcon icon={faCheckCircle} className="success-message-icon" />
             <div className="success-message">
-              {successMessage}
+              {mensagem && <p>{mensagem}</p>}
             </div>
           </div>
         )}
