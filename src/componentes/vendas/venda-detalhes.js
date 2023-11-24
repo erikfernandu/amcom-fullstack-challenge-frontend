@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { formatarValor, formatarDataEHora } from '../utilitarios/functions';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { formatarValor } from '../utilitarios/functions';
 import axios from 'axios';
 import './css/vendas.css';
 
 const DetalhesVenda = ({ onSetTitulo }) => {
   // Estados a serem controlados
+  const navigate = useNavigate();
   const { vendaId } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -22,9 +23,6 @@ const DetalhesVenda = ({ onSetTitulo }) => {
   const [clienteSelecionado, setClienteSelecionado] = useState('');
   const [valorTotal, setValorTotal] = useState(0);
   const [botaoDesabilitado, setBotaoDesabilitado] = useState(true);
-  const navigate = useNavigate();
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
   // Carregar os dados da venda
   useEffect(() => {
     if (vendaId) {
@@ -43,7 +41,7 @@ const DetalhesVenda = ({ onSetTitulo }) => {
           setClienteSelecionado(vendaDetalhes.cliente);
           setProdutosAdicionados(produtosDaVenda);
           setValorTotal(vendaDetalhes.valor_total);
-          setDataEHoraVenda(formatarDataEHora(vendaDetalhes.dataehora));
+          setDataEHoraVenda(vendaDetalhes.dataehora);
           onSetTitulo(`Alterar Venda N°: ${notaFiscal}`);
         }
         catch (error) {
@@ -52,7 +50,7 @@ const DetalhesVenda = ({ onSetTitulo }) => {
       };
       fetchVendaDetails();
     }
-  }, [onSetTitulo, vendaId]);
+  }, [onSetTitulo, vendaId, notaFiscal]);
   // Pesquisa do produto por termo
   const handleResultClick = async (result) => {
     try {
@@ -64,7 +62,6 @@ const DetalhesVenda = ({ onSetTitulo }) => {
       console.error('Erro ao obter detalhes do produto:', error);
     }
   };
-
   useEffect(() => {
     const fetchApiData = async () => {
       try {
@@ -86,11 +83,11 @@ const DetalhesVenda = ({ onSetTitulo }) => {
     if (produtoSelecionado && quantidadeAtual > 0) {
       const novoItem = {
         produto: {
-          id: produtoSelecionado.id || '',
-          codigo: produtoSelecionado.codigo || '',
-          descricao: produtoSelecionado.descricao || '',
-          valor: produtoSelecionado.valor || 0,
-          comissao: produtoSelecionado.comissao || 0,
+          id: produtoSelecionado.id,
+          codigo: produtoSelecionado.codigo,
+          descricao: produtoSelecionado.descricao,
+          valor: produtoSelecionado.valor,
+          comissao: produtoSelecionado.comissao,
         },
         quantidade: quantidadeAtual,
       };
@@ -124,7 +121,6 @@ const DetalhesVenda = ({ onSetTitulo }) => {
     const selectedValue = event.target.value;
     setVendedorSelecionado(selectedValue);
   };
-
   useEffect(() => {
     const apiUrl = 'http://127.0.0.1:8000/api/vendedores/';
     
@@ -143,7 +139,6 @@ const DetalhesVenda = ({ onSetTitulo }) => {
     const selectedValue = event.target.value;
     setClienteSelecionado(selectedValue);
   };
-
   useEffect(() => {
     const apiUrl = 'http://127.0.0.1:8000/api/clientes/';
     const fetchData = async () => {
@@ -171,41 +166,20 @@ const DetalhesVenda = ({ onSetTitulo }) => {
         itemvenda_set: produtosAdicionados.map(item => ({
           produto: item.produto.id,
           quantidade: item.quantidade,
+          comissao: item.comissao
         })),
       };
   
       const response = await axios.put(`http://127.0.0.1:8000/api/venda-detalhes/${vendaId}/`, vendaData);
-  
-      if (response.status === 201) {
-        setSuccessMessage(response.data.message);
-        setShowSuccessMessage(true);
-        setTimeout(() => {
-          navigate(`/vendas?mensagem=VENDA ATUALIZADA COM SUCESSO`);
-          setShowSuccessMessage(false);
-          setSuccessMessage('');
-        }, 3000);
-      } else {
-        setSuccessMessage(response.data)
-        setShowSuccessMessage(true);
-      }
+      navigate('/vendas', {state: {mensagem: response.data.mensagem}});
     } catch (error) {
-      const errorMessage = error.message || 'OCOREU UM ERRO AO PROCESSAR SUA REQUISIÇÃO.';
-      setSuccessMessage(errorMessage);
-      setShowSuccessMessage(true);
+      console.log('ERRO_CRITICO', error)
     }
   };
 
   return (
     <div className="nova-venda-container">
       <div className="produtos-section">
-        {showSuccessMessage && (
-          <div className="success-message-container">
-            <FontAwesomeIcon icon={faCheckCircle} className="success-message-icon" />
-            <div className="success-message">
-              {successMessage}
-            </div>
-          </div>
-        )}
         <h2>Produtos</h2>
         <div className="buscar-quantidade">
           <div className="buscar">

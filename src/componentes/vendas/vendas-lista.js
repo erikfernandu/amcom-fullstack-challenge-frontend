@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash,faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation } from 'react-router-dom';
-import { formatarValor } from '../utilitarios/functions';
+import { formatarValor, formatarDataEHora } from '../utilitarios/functions';
 import axios from 'axios';
 import './css/lista-vendas.css';
 
@@ -10,15 +10,24 @@ const ListaVendas = ({ onSetTitulo }) => {
   // Estados a serem controlados
   const [vendas, setDados] = useState([]);
   const [showItens, setShowItens] = useState({});
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const location = useLocation();
-  const mensagem = new URLSearchParams(location.search).get('mensagem');
+
   // Titulo do componente
   useEffect(() => {
     onSetTitulo("Vendas");
+    
+    if (location.state && location.state.mensagem) {
+      setSuccessMessage(location.state.mensagem);
+      setShowSuccessMessage(true);
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+        setSuccessMessage('');
+      }, 3000);
+    }
     fetchData();
-  }, [onSetTitulo]);
+  }, [onSetTitulo, location.state]);
   // Atualização de dados das vendas
   const fetchData = async () => {
     try {
@@ -60,11 +69,11 @@ const ListaVendas = ({ onSetTitulo }) => {
   return (
     <div>
       <div className="container-header">
-        {showSuccessMessage && (
+      {showSuccessMessage && (
           <div className="success-message-container">
             <FontAwesomeIcon icon={faCheckCircle} className="success-message-icon" />
             <div className="success-message">
-              {mensagem && <p>{mensagem}</p>}
+              {successMessage}
             </div>
           </div>
         )}
@@ -107,7 +116,7 @@ const ListaVendas = ({ onSetTitulo }) => {
                   {venda.vendedor}
                 </div>
                 <div className="tabela-cell">
-                  {venda.dataehora}
+                  {formatarDataEHora(venda.dataehora)}
                 </div>
                 <div className="tabela-cell">
                   {formatarValor(venda.valor_total)}
@@ -144,8 +153,8 @@ const ListaVendas = ({ onSetTitulo }) => {
                         <td>{item.quantidade}</td>
                         <td>{formatarValor(item.produto.valor)}</td>
                         <td>{formatarValor(item.quantidade * item.produto.valor)}</td>
-                        <td>{item.produto.comissao} %</td>
-                        <td>{formatarValor(((item.quantidade * item.produto.valor)*item.produto.comissao) /100)}</td>
+                        <td>{item.comissao} %</td>
+                        <td>{formatarValor(((item.quantidade * item.produto.valor)*item.comissao) /100)}</td>
                       </tr>
                     ))}
                     <tr>

@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatarValor } from '../utilitarios/functions';
 import axios from 'axios';
 import './css/vendas.css';
+
+const getCurrentDateTime = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
 
 const NovaVenda = ({ onSetTitulo }) => {
   // Estados a serem controlados
@@ -14,29 +24,18 @@ const NovaVenda = ({ onSetTitulo }) => {
   const [produtosAdicionados, setProdutosAdicionados] = useState([]);
   const [quantidadeAtual, setQuantidadeAtual] = useState(0);
   const [valorTotal, setValorTotal] = useState(0);
+  const [dataEHora, setDataEHora] = useState(getCurrentDateTime);
   const [vendedores, setVendedores] = useState([]);
   const [vendedorSelecionado, setVendedorSelecionado] = useState('');
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState('');
   const [botaoDesabilitado, setBotaoDesabilitado] = useState(true);
   const navigate = useNavigate();
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
   // Carregar os dados da venda
   useEffect(() => {
     onSetTitulo("Nova Venda");
   }, [onSetTitulo]);
 
-  const getCurrentDateTime = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
   // Pesquisa do produto por termo
   const handleResultClick = async (result) => {
     try {
@@ -50,7 +49,6 @@ const NovaVenda = ({ onSetTitulo }) => {
       console.error('Erro ao obter detalhes do produto:', error);
     }
   };
-
   useEffect(() => {
     const fetchApiData = async () => {
       try {
@@ -102,12 +100,15 @@ const NovaVenda = ({ onSetTitulo }) => {
       setProdutosAdicionados(novosProdutos);
     }
   };
+  function handleDataChange(event) {
+    const selectedValue = event.target.value;
+    setDataEHora(selectedValue);
+  }
   // Consulta à API pela lista de vendedores
   const handleVendedoresChange = (event) => {
     const selectedValue = event.target.value;
     setVendedorSelecionado(selectedValue);
   };
-
   useEffect(() => {
     const apiUrl = 'http://127.0.0.1:8000/api/vendedores/';
     fetch(apiUrl)
@@ -120,7 +121,6 @@ const NovaVenda = ({ onSetTitulo }) => {
     const selectedValue = event.target.value;
     setClienteSelecionado(selectedValue);
   };
-
   useEffect(() => {
     const apiUrl = 'http://127.0.0.1:8000/api/clientes/';
     fetch(apiUrl)
@@ -144,6 +144,7 @@ const NovaVenda = ({ onSetTitulo }) => {
         num_notafiscal: getRandomNotaFiscal(),
         vendedor: vendedorSelecionado,
         cliente: clienteSelecionado,
+        dataehora: dataEHora,
         itemvenda_set: produtosAdicionados.map(item => ({
           produto: item.produto.id,
           quantidade: item.quantidade,
@@ -151,25 +152,10 @@ const NovaVenda = ({ onSetTitulo }) => {
       };
 
       const response = await axios.post('http://127.0.0.1:8000/api/venda-nova/', vendaData);
-      // Tratamento de resposta da API
-      if (response.status === 201) {
-        setSuccessMessage(response.data.message);
-        setShowSuccessMessage(true);
-
-        navigate(`/vendas?mensagem=VENDA CADASTRADA COM SUCESSO`);
-        setTimeout(() => {
-          setShowSuccessMessage(false);
-          setSuccessMessage('');
-        }, 3000);
-      } else {
-        setSuccessMessage(response.data)
-        setShowSuccessMessage(true);
-      }
+      navigate('/vendas', {state: {mensagem: response.data.mensagem}});
 
     } catch (error) {
-      const errorMessage = error.message || 'ERRO AO PROCESSAR REQUISIÇÃO.';
-      setSuccessMessage(errorMessage);
-      setShowSuccessMessage(true);
+      console.log('ERRO_CRITICO', error)
     }
   };
 
@@ -230,7 +216,7 @@ const NovaVenda = ({ onSetTitulo }) => {
           {/* Conteúdo da seção de Dados da Venda */}
           <div className="data-hora">
             <label htmlFor='data'>Data e hora da venda:</label>
-            <input id='data' type="datetime-local" defaultValue={getCurrentDateTime()} />
+            <input id='data' type="datetime-local" defaultValue={getCurrentDateTime()} onChange={handleDataChange}/>
           </div>
           <div className="vendedor">
             <label htmlFor='vendedoresSelect'>Escolha um vendedor:</label>
