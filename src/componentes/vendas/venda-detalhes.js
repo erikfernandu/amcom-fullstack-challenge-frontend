@@ -16,12 +16,12 @@ const DetalhesVenda = ({ onSetTitulo }) => {
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [produtosAdicionados, setProdutosAdicionados] = useState([]);
   const [quantidadeAtual, setQuantidadeAtual] = useState(0);
-  const [dataEHoraVenda, setDataEHoraVenda] = useState(null);
+  const [valorTotal, setValorTotal] = useState(0);
+  const [dataEHora, setDataEHora] = useState('');
   const [vendedores, setVendedores] = useState([]);
   const [vendedorSelecionado, setVendedorSelecionado] = useState('');
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState('');
-  const [valorTotal, setValorTotal] = useState(0);
   const [botaoDesabilitado, setBotaoDesabilitado] = useState(true);
   // Carregar os dados da venda
   useEffect(() => {
@@ -41,7 +41,7 @@ const DetalhesVenda = ({ onSetTitulo }) => {
           setClienteSelecionado(vendaDetalhes.cliente);
           setProdutosAdicionados(produtosDaVenda);
           setValorTotal(vendaDetalhes.valor_total);
-          setDataEHoraVenda(vendaDetalhes.dataehora);
+          setDataEHora(vendaDetalhes.dataehora);
           onSetTitulo(`Alterar Venda N°: ${notaFiscal}`);
         }
         catch (error) {
@@ -116,6 +116,10 @@ const DetalhesVenda = ({ onSetTitulo }) => {
       setProdutosAdicionados(novosProdutos);
     }
   };
+  function handleDataChange(event) {
+    const selectedValue = event.target.value;
+    setDataEHora(selectedValue);
+  }
 // Consulta à API pela lista de vendedores
   const handleVendedoresChange = (event) => {
     const selectedValue = event.target.value;
@@ -160,7 +164,7 @@ const DetalhesVenda = ({ onSetTitulo }) => {
     try {
       const vendaData = {
         num_notafiscal: notaFiscal,
-        dataehora: '2023-10-10T10:10:10',
+        dataehora: dataEHora,
         vendedor: vendedorSelecionado,
         cliente: clienteSelecionado,
         itemvenda_set: produtosAdicionados.map(item => ({
@@ -234,7 +238,8 @@ const DetalhesVenda = ({ onSetTitulo }) => {
           {/* Conteúdo da seção de Dados da Venda */}
           <div className="data-hora">
             <label htmlFor="data">Data e hora da venda:</label>
-            <input id="data" type="datetime-local" value={dataEHoraVenda || ''} onChange={(e) => setDataEHoraVenda(e.target.value)}/>
+            <input id='data' type="datetime-local" value={dataEHora} onChange={handleDataChange}/>
+            {/* <input id="data" type="datetime-local" value={dataEHoraVenda || ''} onChange={(e) => setDataEHoraVenda(e.target.value)}/> */}
           </div>
           <div className="vendedor">
             <label htmlFor='vendedoresSelect'>Escolha um vendedor:</label>

@@ -18,6 +18,7 @@ const getCurrentDateTime = () => {
 
 const NovaVenda = ({ onSetTitulo }) => {
   // Estados a serem controlados
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
@@ -30,7 +31,6 @@ const NovaVenda = ({ onSetTitulo }) => {
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState('');
   const [botaoDesabilitado, setBotaoDesabilitado] = useState(true);
-  const navigate = useNavigate();
   // Carregar os dados da venda
   useEffect(() => {
     onSetTitulo("Nova Venda");
@@ -142,9 +142,9 @@ const NovaVenda = ({ onSetTitulo }) => {
     try {
       const vendaData = {
         num_notafiscal: getRandomNotaFiscal(),
+        dataehora: dataEHora,
         vendedor: vendedorSelecionado,
         cliente: clienteSelecionado,
-        dataehora: dataEHora,
         itemvenda_set: produtosAdicionados.map(item => ({
           produto: item.produto.id,
           quantidade: item.quantidade,

@@ -19,11 +19,28 @@
 
         git clone --depth 1 https://github.com/erikfernandu/amcom-fullstack-challenge-frontend.git
 
-    2. npm install
+    2. No Linux podemos instalar o Node via apt, mas antes precisamos adicionar seu repositório com CURL.
+        
+        curl -sL https://deb.nodesource.com/setup\_13.x | sudo -E bash -
+
+    3. Adicionamos a versão 13.x do Node, caso haja uma versão superior, você pode alterar este valor. Em seguida vamos instalar o Node.
+
+        sudo apt install nodejs
 
 # Configuração
 
-    1. cd amcom-fullstack-challenge-frontend
+    1. Para dar início a nossa primeira aplicação, vamos abrir um novo terminal e executar os seguintes comandos:
+    
+        mkdir amcom-fullstack-challenge-frontend
+        cd amcom-fullstack-challenge-frontend
+        npm init
+
+    2. Vamos instalar algumas dependencias
+
+        npm install --save @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome
+        npm install react-router-dom
+        npm install @babel/plugin-proposal-private-property-in-object
+        npm install axios
 
 # Uso
 
