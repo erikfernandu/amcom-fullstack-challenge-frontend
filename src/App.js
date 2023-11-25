@@ -1,5 +1,5 @@
 // Módulos
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // Componentes
 import Header from './componentes/header/header.js';
@@ -12,6 +12,14 @@ import Comissoes from './componentes/comissoes/comissoes-lista.js';
 import './App.css';
 
 const App = () => {
+
+  useEffect(() => {
+    document.title = 'AMCom Fullstack Challenge';
+    return () => {
+      document.title = 'Título Padrão';
+    };
+  }, []);
+
   const [collapsed, setCollapsed] = useState(true);
   const [titulo, setTitulo] = useState("");
   // Controle de estado do sidebar pela aplicação
