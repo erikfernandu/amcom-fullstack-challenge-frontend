@@ -41,7 +41,7 @@ const NovaVenda = ({ onSetTitulo }) => {
     try {
       setProdutoSelecionado(result);
 
-      setSearchTerm(result.descricao || '');
+      setSearchTerm(result.codigo_descricao || '');
 
       setSearchResults([]);
 
@@ -170,7 +170,7 @@ const NovaVenda = ({ onSetTitulo }) => {
             <ul>
             {searchResults.map((result, index) => (
               <li key={`searchResult_${result.id || index}`} onMouseDown={() => handleResultClick(result)}>
-                {result.descricao}
+                {result.codigo_descricao}
               </li>
             ))}
             </ul>
@@ -249,7 +249,7 @@ const NovaVenda = ({ onSetTitulo }) => {
             Cancelar
           </Link>
             
-            <button onClick={handleFinalizarVenda} disabled={botaoDesabilitado} style={{backgroundColor: botaoDesabilitado ? '#dddddd' : '#317776',backgroudColor: botaoDesabilitado ? '#aaaaaa' : 'black'}}>Finalizar</button>
+            <button onClick={handleFinalizarVenda} disabled={botaoDesabilitado} style={{backgroundColor: botaoDesabilitado ? '#dddddd' : '#235656',backgroudColor: botaoDesabilitado ? '#aaaaaa' : 'black'}}>Finalizar</button>
           </div>
         </div>
       </div>
