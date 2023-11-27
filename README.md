@@ -1,3 +1,4 @@
+
 # Papelaria AMCom
 
     Bem-vindo à aplicação front-end da Papelaria AMCom, projetada para a gestão de vendas e apuração de comissão das vendas.
