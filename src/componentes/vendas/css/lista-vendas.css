@@ -27,29 +27,6 @@
   font-size:medium;
 }
 
-.verBtn,
-.editarBtn,
-.excluirBtn {
-  padding: 5px 10px;
-  margin-right: 5px;
-  cursor: pointer;
-  border: none;
-  background-color: transparent;
-  font-size: medium;
-}
-
-.verBtn {
-  color:#235656;
-}
-
-.editarBtn {
-  color: #235656;
-}
-  
-.excluirBtn {
-  color: #ad2f26;
-}
-
 .inserir-btn {
   padding: 10px 10px;
   background-color: #235656;

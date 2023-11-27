@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setTitle } from '../../redux/actions';
+import { setHeaderTitle } from '../../redux/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
@@ -38,7 +38,7 @@ const NovaVenda = () => {
 
   // Titulo do componente
   useEffect(() => {
-    dispatch(setTitle('Nova Venda'));
+    dispatch(setHeaderTitle('Nova Venda'));
 
   }, [dispatch]);
 
@@ -54,7 +54,7 @@ const NovaVenda = () => {
     }
   };
   useEffect(() => {
-    const axiosApiData = async () => {
+    const axios_pesquisa_produtos = async () => {
       try {
         const response = await axios.get(`http://127.0.0.1:8000/api/produtos/?search=${searchTerm}`);
         setSearchResults(response.data);
@@ -64,14 +64,14 @@ const NovaVenda = () => {
     };
   
     if (searchTerm.trim() !== '') {
-      axiosApiData();
+      axios_pesquisa_produtos();
     } else {
       setSearchResults([]);
     }
   }, [searchTerm]);
 
   // Adição de produto à venda
-  const handleAdicionarProduto = () => {
+  const handle_adicionar_produtots = () => {
     if (produtoSelecionado && quantidadeAtual > 0) {
       const valorProduto = produtoSelecionado.valor || 0;
       const totalAtualizado = valorTotal + valorProduto * quantidadeAtual;
@@ -116,7 +116,7 @@ const NovaVenda = () => {
     setVendedorSelecionado(selectedValue);
   };
   useEffect(() => {
-    const axiosApiData = async () => {
+    const axios_dados_vendedores = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/vendedores/');
         setVendedores(response.data);
@@ -124,7 +124,7 @@ const NovaVenda = () => {
         console.error('Erro ao obter vendedores:', error);
       }
     };
-    axiosApiData();
+    axios_dados_vendedores();
   }, []);
 
   // Selecionar cliente
@@ -133,7 +133,7 @@ const NovaVenda = () => {
     setClienteSelecionado(selectedValue);
   };
   useEffect(() => {
-    const axiosApiData = async () => {
+    const axios_dados_clientets = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/clientes/');
         setClientes(response.data);
@@ -141,7 +141,7 @@ const NovaVenda = () => {
         console.error('Erro ao obter clientes:', error);
       }
     };
-    axiosApiData();
+    axios_dados_clientets();
   }, []);
 
   // Controle de estado do botão para finalizar venda
@@ -195,7 +195,7 @@ const NovaVenda = () => {
           <div className="quantidade">
             <label htmlFor='quantidade'>Quantidade de itens:</label>
             <input id='quantidade' type="number" min="0" value={quantidadeAtual} onChange={(e) => setQuantidadeAtual(parseInt(e.target.value, 10) || 0)}/>
-            <button className='adicionar-btn' onClick={handleAdicionarProduto}>Adicionar</button>
+            <button className='adicionar-btn btn-container' onClick={handle_adicionar_produtots}>Adicionar</button>
           </div>
         </div>
         <div className="produtos-labels">
@@ -219,7 +219,7 @@ const NovaVenda = () => {
               <span>{item.quantidade}</span>
               <span>{formatarValor(item.produto.valor)}</span>
               <span>{formatarValor(item.quantidade * item.produto.valor)}</span>
-              <a className="excluirBtn" onClick={() => handle_excluir_produto(index)}><FontAwesomeIcon icon={faTrash}/></a>
+              <button className="btn-excluir" onClick={() => handle_excluir_produto(index)}><FontAwesomeIcon icon={faTrash}/></button>
             </div>
           ))}
         </div>
@@ -266,7 +266,7 @@ const NovaVenda = () => {
             Cancelar
           </Link>
             
-            <button onClick={handle_finalizar_venda} disabled={botaoDesabilitado} style={{backgroundColor: botaoDesabilitado ? '#dddddd' : '#235656',backgroudColor: botaoDesabilitado ? '#aaaaaa' : 'black'}}>Finalizar</button>
+            <button className='btn-container' onClick={handle_finalizar_venda} disabled={botaoDesabilitado} style={{backgroundColor: botaoDesabilitado ? '#dddddd' : '#235656',backgroudColor: botaoDesabilitado ? '#aaaaaa' : 'black'}}>Finalizar</button>
           </div>
         </div>
       </div>

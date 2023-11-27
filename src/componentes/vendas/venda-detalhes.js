@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setTitle } from '../../redux/actions';
+import { setHeaderTitle } from '../../redux/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { formatarValor } from '../utilitarios/functions';
@@ -31,7 +31,7 @@ const DetalhesVenda = () => {
   // Carregar os dados da venda
   useEffect(() => {
     if (vendaId) {
-      const axiosApiData = async () => {
+      const axios_venda_detatlhes = async () => {
         try {
           const response = await axios.get(`http://127.0.0.1:8000/api/venda-detalhes/${vendaId}`);
           const vendaDetalhes = response.data;
@@ -47,18 +47,18 @@ const DetalhesVenda = () => {
           setProdutosAdicionados(produtosDaVenda);
           setValorTotal(vendaDetalhes.valor_total);
           setDataEHora(vendaDetalhes.dataehora);
-          dispatch(setTitle(`Alterar Venda Nº: ${notaFiscal}`));
+          dispatch(setHeaderTitle(`Alterar Venda Nº: ${notaFiscal}`));
         }
         catch (error) {
           console.error('Erro ao buscar detalhes da venda:', error);
         }
       };
-      axiosApiData();
+      axios_venda_detatlhes();
     }
   }, [dispatch, vendaId, notaFiscal]);
 
   // Pesquisa do produto por termo ou código
-  const handleResultClick = async (result) => {
+  const handle_pesquisa_produtos = async (result) => {
     try {
       setProdutoSelecionado(result);
       setSearchTerm(result.codigo_descricao || '');
@@ -69,7 +69,7 @@ const DetalhesVenda = () => {
     }
   };
   useEffect(() => {
-    const axiosApiData = async () => {
+    const axios_pesquisa_produto = async () => {
       try {
         const response = await axios.get(`http://127.0.0.1:8000/api/produtos/?search=${searchTerm}`);
         setSearchResults(response.data);
@@ -79,7 +79,7 @@ const DetalhesVenda = () => {
     };
   
     if (searchTerm.trim() !== '') {
-      axiosApiData();
+      axios_pesquisa_produto();
     } else {
       setSearchResults([]);
     }
@@ -133,7 +133,7 @@ const DetalhesVenda = () => {
     setVendedorSelecionado(selectedValue);
   };
   useEffect(() => {
-    const axiosApiData = async () => {
+    const axios_dados_vendedores = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/vendedores/');
         setVendedores(response.data);
@@ -141,7 +141,7 @@ const DetalhesVenda = () => {
         console.error('Erro ao obter vendedores:', error);
       }
     };
-    axiosApiData();
+    axios_dados_vendedores();
   }, []);
 
   // Selecionar cliente
@@ -150,7 +150,7 @@ const DetalhesVenda = () => {
     setClienteSelecionado(selectedValue);
   };
   useEffect(() => {
-    const axiosApiData = async () => {
+    const axios_dados_clientes = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/clientes/');
         setClientes(response.data);
@@ -158,7 +158,7 @@ const DetalhesVenda = () => {
         console.error('Erro ao obter clientes:', error);
       }
     };
-    axiosApiData();
+    axios_dados_clientes();
   }, []);
 
   // Controle de estado do botão para finalizar venda
@@ -198,7 +198,7 @@ const DetalhesVenda = () => {
             <input id='buscar' type="text" placeholder="Digite aqui" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
             <ul>
             {searchResults.map((result, index) => (
-              <li key={`searchResult_${result.id || index}`} onMouseDown={() => handleResultClick(result)}>
+              <li key={`searchResult_${result.id || index}`} onMouseDown={() => handle_pesquisa_produtos(result)}>
                 {result.codigo_descricao}
               </li>
             ))}
@@ -207,7 +207,7 @@ const DetalhesVenda = () => {
           <div className="quantidade">
             <label htmlFor='quantidade'>Quantidade de itens:</label>
             <input id='quantidade' type="number" min="0" value={quantidadeAtual} onChange={(e) => setQuantidadeAtual(parseInt(e.target.value, 10) || 0)}/>
-            <button className='adicionar-btn' onClick={handle_adicionar_produto}>Adicionar</button>
+            <button className='adicionar-btn btn-container' onClick={handle_adicionar_produto}>Adicionar</button>
           </div>
         </div>
         <div className="produtos-labels">
@@ -231,7 +231,7 @@ const DetalhesVenda = () => {
               <span>{item.quantidade}</span>
               <span>{formatarValor(item.produto.valor)}</span>
               <span>{formatarValor(item.quantidade * item.produto.valor)}</span>
-              <a className="excluirBtn" onClick={() => handle_exluir_produto(index)}><FontAwesomeIcon icon={faTrash}/></a>
+              <button className="btn-excluir" onClick={() => handle_exluir_produto(index)}><FontAwesomeIcon icon={faTrash}/></button>
             </div>
           ))}
         </div>
@@ -278,7 +278,7 @@ const DetalhesVenda = () => {
           <Link to="/vendas" className="botao-link">
             Cancelar
           </Link>
-            <button onClick={handle_finalizar_venda} disabled={botaoDesabilitado} style={{backgroundColor: botaoDesabilitado ? '#dddddd' : '#235656',backgroudColor: botaoDesabilitado ? '#aaaaaa' : 'black'}}>Finalizar</button>
+            <button className='btn-container' onClick={handle_finalizar_venda} disabled={botaoDesabilitado} style={{backgroundColor: botaoDesabilitado ? '#dddddd' : '#235656',backgroudColor: botaoDesabilitado ? '#aaaaaa' : 'black'}}>Finalizar</button>
           </div>
         </div>
       </div>

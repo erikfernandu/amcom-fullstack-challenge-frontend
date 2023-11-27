@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { setTitle } from '../../redux/actions';
+import { setHeaderTitle } from '../../redux/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { formatarValor } from '../utilitarios/functions';
@@ -17,10 +17,10 @@ const ListaComissoes = () => {
   const [totalComissoesPeriodo, setTotalComissoesPeriodo] = useState(0);
   // Título do componente
   useEffect(() => {
-    dispatch(setTitle('Comissões'));
+    dispatch(setHeaderTitle('Comissões'));
   }, [dispatch]);
   // Pesquisa os dados das comissões
-  const handleSearch = async () => {
+  const handle_pesquisa = async () => {
     setIsSearching(true);
     try {
       const response = await axios.get('http://127.0.0.1:8000/api/comissoes/', {
@@ -52,7 +52,7 @@ const ListaComissoes = () => {
         <div className="input-container">
           <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
           <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-          <button className="searchBtn" onClick={handleSearch}>
+          <button className="searchBtn" onClick={handle_pesquisa}>
             <FontAwesomeIcon icon={faSearch} />
           </button>
         </div>

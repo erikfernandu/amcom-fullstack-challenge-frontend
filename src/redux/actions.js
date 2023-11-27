@@ -1,7 +1,7 @@
 export const SET_TITULO = 'SET_TITULO';
 export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR';
 
-export const setTitle = (title) => ({
+export const setHeaderTitle = (title) => ({
   type: SET_TITULO,
   payload: title,
 });

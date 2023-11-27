@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setTitle } from '../../redux/actions';
+import { setHeaderTitle } from '../../redux/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash,faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { formatarValor, formatarDataEHora } from '../utilitarios/functions';
@@ -19,7 +19,7 @@ const ListaVendas = () => {
 
   // Titulo do componente
   useEffect(() => {
-    dispatch(setTitle('Vendas'));
+    dispatch(setHeaderTitle('Vendas'));
     
     if (location.state && location.state.mensagem) {
       setSuccessMessage(location.state.mensagem);
@@ -131,15 +131,15 @@ const ListaVendas = () => {
                   {formatarValor(venda.valor_total)}
                 </div>
                 <div className="tabela-cell">
-                  <button className="verBtn" onClick={() => handle_ver_detalhes(venda.id)}>
+                  <button className="btn-ver" onClick={() => handle_ver_detalhes(venda.id)}>
                     {showItens[venda.id] ? 'Fechar' : 'Ver Itens'}
                   </button>
-                  <a href={`/detalhes/${venda.id}`} className="editarBtn">
+                  <a href={`/detalhes/${venda.id}`} className="btn-editar">
                     <FontAwesomeIcon icon={faEdit}/>
                   </a>
-                  <a className="excluirBtn" onClick={() => handle_excluir_venda(venda.id)}>
+                  <button className="btn-excluir" onClick={() => handle_excluir_venda(venda.id)}>
                     <FontAwesomeIcon icon={faTrash}/>
-                  </a>
+                  </button>
                 </div>
               </div>
             {showItens[venda.id] && (

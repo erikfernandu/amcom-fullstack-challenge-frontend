@@ -96,7 +96,7 @@ input, select{
   opacity: 0.7;
   border-radius: 5px;
 }
-.nova-venda-container button {
+.btn-container {
   padding: 8px;
   background-color: #235656;
   color: white;
