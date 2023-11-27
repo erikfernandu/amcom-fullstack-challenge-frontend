@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { setTitle } from '../../redux/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,6 +9,7 @@ import axios from 'axios';
 import './css/vendas.css';
 
 const getCurrentDateTime = () => {
+  
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -16,8 +19,9 @@ const getCurrentDateTime = () => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-const NovaVenda = ({ onSetTitulo }) => {
+const NovaVenda = () => {
   // Estados a serem controlados
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -31,41 +35,41 @@ const NovaVenda = ({ onSetTitulo }) => {
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState('');
   const [botaoDesabilitado, setBotaoDesabilitado] = useState(true);
-  // Carregar os dados da venda
+
+  // Titulo do componente
   useEffect(() => {
-    onSetTitulo("Nova Venda");
-  }, [onSetTitulo]);
+    dispatch(setTitle('Nova Venda'));
+
+  }, [dispatch]);
 
   // Pesquisa do produto por termo
   const handleResultClick = async (result) => {
     try {
       setProdutoSelecionado(result);
-
       setSearchTerm(result.codigo_descricao || '');
-
       setSearchResults([]);
-
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Erro ao obter detalhes do produto:', error);
     }
   };
   useEffect(() => {
-    const fetchApiData = async () => {
+    const axiosApiData = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/produtos/?search=${searchTerm}`);
-        const data = await response.json();
-        setSearchResults(data);
+        const response = await axios.get(`http://127.0.0.1:8000/api/produtos/?search=${searchTerm}`);
+        setSearchResults(response.data);
       } catch (error) {
         console.error('Erro ao buscar dados da API:', error);
       }
     };
   
     if (searchTerm.trim() !== '') {
-      fetchApiData();
+      axiosApiData();
     } else {
       setSearchResults([]);
     }
   }, [searchTerm]);
+
   // Adição de produto à venda
   const handleAdicionarProduto = () => {
     if (produtoSelecionado && quantidadeAtual > 0) {
@@ -85,8 +89,9 @@ const NovaVenda = ({ onSetTitulo }) => {
       setSearchResults([]);
     }
   };
+
   // Exclusão de produto da venda
-  const handleExcluirProduto = (index) => {
+  const handle_excluir_produto = (index) => {
     if (index >= 0 && index < produtosAdicionados.length) {
       const produtoRemovido = produtosAdicionados[index];
       const valorProdutoRemovido = produtoRemovido.produto.valor || 0;
@@ -100,34 +105,45 @@ const NovaVenda = ({ onSetTitulo }) => {
       setProdutosAdicionados(novosProdutos);
     }
   };
-  function handleDataChange(event) {
+  function handle_mudar_data(event) {
     const selectedValue = event.target.value;
     setDataEHora(selectedValue);
   }
-  // Consulta à API pela lista de vendedores
-  const handleVendedoresChange = (event) => {
+
+  // Selecionar vendedor
+  const handle_mudar_vendedor = (event) => {
     const selectedValue = event.target.value;
     setVendedorSelecionado(selectedValue);
   };
   useEffect(() => {
-    const apiUrl = 'http://127.0.0.1:8000/api/vendedores/';
-    fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => setVendedores(data))
-      .catch(error => console.error('Erro ao obter vendedores:', error));
+    const axiosApiData = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/vendedores/');
+        setVendedores(response.data);
+      } catch (error) {
+        console.error('Erro ao obter vendedores:', error);
+      }
+    };
+    axiosApiData();
   }, []);
-  // Consulta à api pela lista de clientes
-  const handleClientesChange = (event) => {
+
+  // Selecionar cliente
+  const handle_mudar_cliente = (event) => {
     const selectedValue = event.target.value;
     setClienteSelecionado(selectedValue);
   };
   useEffect(() => {
-    const apiUrl = 'http://127.0.0.1:8000/api/clientes/';
-    fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => setClientes(data))
-      .catch(error => console.error('Erro ao obter clientes:', error));
+    const axiosApiData = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/clientes/');
+        setClientes(response.data);
+      } catch (error) {
+        console.error('Erro ao obter clientes:', error);
+      }
+    };
+    axiosApiData();
   }, []);
+
   // Controle de estado do botão para finalizar venda
   useEffect(() => {
     setBotaoDesabilitado(!(vendedorSelecionado && clienteSelecionado && valorTotal > 0));
@@ -137,8 +153,9 @@ const NovaVenda = ({ onSetTitulo }) => {
     const randomNumber = Math.floor(Math.random() * 1000000000);
     return randomNumber.toString().padStart(9, '0');
   };
+
   // Finalizar a venda
-  const handleFinalizarVenda = async () => {
+  const handle_finalizar_venda = async () => {
     try {
       const vendaData = {
         num_notafiscal: getRandomNotaFiscal(),
@@ -202,7 +219,7 @@ const NovaVenda = ({ onSetTitulo }) => {
               <span>{item.quantidade}</span>
               <span>{formatarValor(item.produto.valor)}</span>
               <span>{formatarValor(item.quantidade * item.produto.valor)}</span>
-              <a className="excluirBtn" onClick={() => handleExcluirProduto(index)}><FontAwesomeIcon icon={faTrash}/></a>
+              <a className="excluirBtn" onClick={() => handle_excluir_produto(index)}><FontAwesomeIcon icon={faTrash}/></a>
             </div>
           ))}
         </div>
@@ -216,11 +233,11 @@ const NovaVenda = ({ onSetTitulo }) => {
           {/* Conteúdo da seção de Dados da Venda */}
           <div className="data-hora">
             <label htmlFor='data'>Data e hora da venda:</label>
-            <input id='data' type="datetime-local" defaultValue={getCurrentDateTime()} onChange={handleDataChange}/>
+            <input id='data' type="datetime-local" defaultValue={getCurrentDateTime()} onChange={handle_mudar_data}/>
           </div>
           <div className="vendedor">
             <label htmlFor='vendedoresSelect'>Escolha um vendedor:</label>
-            <select id='vendedoresSelect' value={vendedorSelecionado} onChange={handleVendedoresChange}>
+            <select id='vendedoresSelect' value={vendedorSelecionado} onChange={handle_mudar_vendedor}>
               <option value="">Selecione...</option>
               {vendedores.map((vendedor) => (
                 <option key={vendedor.id} value={vendedor.id}>
@@ -231,7 +248,7 @@ const NovaVenda = ({ onSetTitulo }) => {
           </div>
           <div className="cliente">
             <label htmlFor='clientesSelect'>Escolha um cliente:</label>
-            <select id='clientesSelect' value={clienteSelecionado} onChange={handleClientesChange}>
+            <select id='clientesSelect' value={clienteSelecionado} onChange={handle_mudar_cliente}>
               <option value="">Selecione...</option>
               {clientes.map((cliente) => (
                 <option key={cliente.id} value={cliente.id}>
@@ -249,7 +266,7 @@ const NovaVenda = ({ onSetTitulo }) => {
             Cancelar
           </Link>
             
-            <button onClick={handleFinalizarVenda} disabled={botaoDesabilitado} style={{backgroundColor: botaoDesabilitado ? '#dddddd' : '#235656',backgroudColor: botaoDesabilitado ? '#aaaaaa' : 'black'}}>Finalizar</button>
+            <button onClick={handle_finalizar_venda} disabled={botaoDesabilitado} style={{backgroundColor: botaoDesabilitado ? '#dddddd' : '#235656',backgroudColor: botaoDesabilitado ? '#aaaaaa' : 'black'}}>Finalizar</button>
           </div>
         </div>
       </div>

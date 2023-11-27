@@ -7,10 +7,12 @@
 
     Certifique-se de ter as seguintes dependências instaladas em seu ambiente de desenvolvimento:
 
-    ## npm (3.11.2)
+    ## node (18.13.0)
+    ## npm (9.2.0)
     ## fontawesome-svg-core (6.4.2)
     ## react-fontawesome (0.2.0)
     ## react-router-dom (6.19.0)
+    ## redux toolkit ()
     ## axios (1.6.2)
 
 # Instalação
@@ -21,11 +23,11 @@
 
     2. No Linux podemos instalar o Node via apt, mas antes precisamos adicionar seu repositório com CURL.
         
-        curl -sL https://deb.nodesource.com/setup\_13.x | sudo -E bash -
+        curl -sL https://deb.nodesource.com/setup\_18.13 | sudo -E bash -
 
-    3. Adicionamos a versão 13.x do Node, caso haja uma versão superior, você pode alterar este valor. Em seguida vamos instalar o Node.
+    3. Adicionamos a versão 18.13 do Node, caso haja uma versão superior, você pode alterar este valor. Em seguida vamos instalar o Node e o npm.
 
-        sudo apt install nodejs
+        sudo apt install nodejs npm
 
 # Configuração
 
@@ -41,6 +43,7 @@
         npm install react-router-dom
         npm install @babel/plugin-proposal-private-property-in-object
         npm install axios
+        npm install @reduxjs/toolkit react-redux
 
 # Uso
 

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { setTitle } from '../../redux/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { formatarValor } from '../utilitarios/functions';
 import './css/comissoes.css';
 
-const ListaComissoes = ({ onSetTitulo }) => {
+const ListaComissoes = () => {
   // Controle de estados
+  const dispatch = useDispatch();
   const [isSearching, setIsSearching] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -14,8 +17,8 @@ const ListaComissoes = ({ onSetTitulo }) => {
   const [totalComissoesPeriodo, setTotalComissoesPeriodo] = useState(0);
   // Título do componente
   useEffect(() => {
-    onSetTitulo("Comissões");
-  }, [onSetTitulo]);
+    dispatch(setTitle('Comissões'));
+  }, [dispatch]);
   // Pesquisa os dados das comissões
   const handleSearch = async () => {
     setIsSearching(true);

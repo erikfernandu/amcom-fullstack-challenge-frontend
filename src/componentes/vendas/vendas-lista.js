@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setTitle } from '../../redux/actions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash,faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { Link, useLocation } from 'react-router-dom';
 import { formatarValor, formatarDataEHora } from '../utilitarios/functions';
 import axios from 'axios';
 import './css/lista-vendas.css';
 
-const ListaVendas = ({ onSetTitulo }) => {
+const ListaVendas = () => {
   // Estados a serem controlados
+  const dispatch = useDispatch();
+  const location = useLocation();
   const [vendas, setDados] = useState([]);
   const [showItens, setShowItens] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const location = useLocation();
 
   // Titulo do componente
   useEffect(() => {
-    onSetTitulo("Vendas");
+    dispatch(setTitle('Vendas'));
     
     if (location.state && location.state.mensagem) {
       setSuccessMessage(location.state.mensagem);
@@ -26,34 +29,40 @@ const ListaVendas = ({ onSetTitulo }) => {
         setSuccessMessage('');
       }, 3000);
     }
-    fetchData();
-  }, [onSetTitulo, location.state]);
+  }, [dispatch, location.state]);
+
+  useEffect(() => {
+    axiosFetchData();
+  }, []);
+
   // Atualização de dados das vendas
-  const fetchData = async () => {
+  const axiosFetchData = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/vendas/');
-      const data = await response.json();
+      const response = await axios.get('http://127.0.0.1:8000/api/vendas/');
+      const data = response.data;
       setDados(data);
     } catch (error) {
       console.error('Erro ao buscar vendas:', error);
     }
   };
+
   // Mostrar os detalhes da venda
-  const handleVerItens = (vendaId) => {
+  const handle_ver_detalhes = (vendaId) => {
     setShowItens({
       ...showItens,
       [vendaId]: !showItens[vendaId],
     });
   };
+
   // Função de exclusão da venda
-  const handle_delete = async (vendaId) => {
+  const handle_excluir_venda = async (vendaId) => {
     try {
       const response = await axios.delete(`http://127.0.0.1:8000/api/venda-detalhes/${vendaId}`);
       // Tratamento de mensagem da API
       if (response.status === 204) {
         setSuccessMessage('VENDA REMOVIDA COM SUCESSO!');
         setShowSuccessMessage(true);
-        fetchData();
+        axiosFetchData();
 
         setTimeout(() => {
           setShowSuccessMessage(false);
@@ -122,13 +131,13 @@ const ListaVendas = ({ onSetTitulo }) => {
                   {formatarValor(venda.valor_total)}
                 </div>
                 <div className="tabela-cell">
-                  <button className="verBtn" onClick={() => handleVerItens(venda.id)}>
+                  <button className="verBtn" onClick={() => handle_ver_detalhes(venda.id)}>
                     {showItens[venda.id] ? 'Fechar' : 'Ver Itens'}
                   </button>
                   <a href={`/detalhes/${venda.id}`} className="editarBtn">
                     <FontAwesomeIcon icon={faEdit}/>
                   </a>
-                  <a className="excluirBtn" onClick={() => handle_delete(venda.id)}>
+                  <a className="excluirBtn" onClick={() => handle_excluir_venda(venda.id)}>
                     <FontAwesomeIcon icon={faTrash}/>
                   </a>
                 </div>

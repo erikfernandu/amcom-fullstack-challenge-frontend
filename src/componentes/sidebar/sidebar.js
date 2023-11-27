@@ -1,18 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import './css/sidebar.css';
 
-const Sidebar = ({ collapsed }) => {
+const Sidebar = () => {
+  const isSidebarOpen = useSelector((state) => state.sidebar.isSidebarOpen);
+
   return (
-    <div className={`sidebar-container ${collapsed ? 'collapsed' : ''}`}>
+    <div className={`sidebar-container ${isSidebarOpen ? '' : 'collapsed'}`}>
+      <div></div>
       <Link to="/vendas">
-        <button className={`sidebar-button ${collapsed ? 'collapsed' : ''}`}>
+        <button className={`sidebar-button ${isSidebarOpen ? '' : 'collapsed'}`}>
           Vendas
           <span className="arrow">&#x2192;</span>
         </button>
       </Link>
       <Link to="/comissoes">
-        <button className={`sidebar-button ${collapsed ? 'collapsed' : ''}`}>
+        <button className={`sidebar-button ${isSidebarOpen ? '' : 'collapsed'}`}>
           Comissões
           <span className="arrow">&#x2192;</span>
         </button>
@@ -22,4 +26,3 @@ const Sidebar = ({ collapsed }) => {
 };
 
 export default Sidebar;
-
